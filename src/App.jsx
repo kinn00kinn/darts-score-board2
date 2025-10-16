@@ -1,88 +1,97 @@
-// src/App.jsx
 import React, { useState } from 'react';
 import Gacha from './components/Gacha';
 import PlayScreen from './components/PlayScreen';
 import Leaderboard from './components/Leaderboard';
-import FullscreenButton from './components/FullscreenButton'; // 全画面表示ボタンをインポート
+import FullscreenButton from './components/FullscreenButton';
+import Timeline from './components/Timeline';
+import EditPlayerModal from './components/EditPlayerModal';
 import './App.css';
 
 function App() {
-  // プレイヤー情報にユニークIDを追加し、スコアを0からスタート
-  const [players, setPlayers] = useState([{ id: Date.now(), name: 'Player 1', score: 0 }]);
+  const [players, setPlayers] = useState([]);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [gachaTrigger, setGachaTrigger] = useState(0);
+  const [timelineMessages, setTimelineMessages] = useState([]);
+  const [editingPlayer, setEditingPlayer] = useState(null);
 
-  // ターン終了時の処理を修正
+  const handleStartEdit = (player) => {
+    setEditingPlayer(player);
+  };
+
+  const handleSaveEdit = (updatedPlayer) => {
+    const sortedPlayers = players
+      .map(p => (p.id === updatedPlayer.id ? updatedPlayer : p))
+      .sort((a, b) => b.score - a.score); // Sort after editing
+    setPlayers(sortedPlayers);
+    setEditingPlayer(null);
+  };
+
   const handleTurnEnd = (turnScore) => {
+    if (players.length === 0) return;
+
     const updatedPlayers = [...players];
-    const currentScore = updatedPlayers[currentPlayerIndex].score;
-    
-    // 加点式に変更
-    updatedPlayers[currentPlayerIndex].score = currentScore + turnScore; 
-    
-    // スコアが高い順（降順）でソート
+    const player = updatedPlayers[currentPlayerIndex];
+    player.score += turnScore;
+
+    const message = `${player.name} が ${turnScore} 点獲得！`;
+    setTimelineMessages(prev => [...prev, message]);
+
     const sortedPlayers = updatedPlayers.sort((a, b) => b.score - a.score);
     setPlayers(sortedPlayers);
-    
-    // 次のプレイヤーへ正しく移動させる
+
     const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
     setCurrentPlayerIndex(nextPlayerIndex);
 
     setGachaTrigger(prev => prev + 1);
   };
 
-  // プレイヤー名変更の処理を追加
-  const handleNameChange = (id, newName) => {
-    setPlayers(players.map(p => (p.id === id ? { ...p, name: newName } : p)));
-  };
-
-  // プレイヤー追加処理を修正
-  const addPlayer = () => {
+  const addPlayer = (name) => {
     const newPlayer = {
-      id: Date.now(), // ユニークなIDを生成
-      name: `Player ${players.length + 1}`,
+      id: Date.now(),
+      name: name,
       score: 0,
     };
-    setPlayers([...players, newPlayer]);
+    setPlayers(prevPlayers => [...prevPlayers, newPlayer]);
   };
-  
-  // ゲームリセット処理を修正
+
   const resetGame = () => {
     setPlayers(players.map(p => ({ ...p, score: 0 })));
     setCurrentPlayerIndex(0);
+    setTimelineMessages([]);
   };
+
+  const currentPlayer = players.length > 0 ? players[currentPlayerIndex] : null;
 
   return (
     <div id="app-container">
-      {/* 全画面表示ボタンを配置 */}
       <FullscreenButton />
-
       <main className="dashboard-grid">
         <section className="column-left">
           <Gacha trigger={gachaTrigger} />
         </section>
-
         <section className="column-center">
           <PlayScreen
-            key={players[currentPlayerIndex].id} // keyを渡してターン変更時にコンポーネントを強制再描画
-            player={players[currentPlayerIndex]}
+            key={currentPlayer?.id || 'no-player'}
+            player={currentPlayer}
             onTurnEnd={handleTurnEnd}
           />
         </section>
-
         <section className="column-right">
           <Leaderboard
             players={players}
             onAddPlayer={addPlayer}
             onReset={resetGame}
-            onNameChange={handleNameChange} // 名前変更関数を渡す
-            currentPlayerId={players[currentPlayerIndex]?.id} // 現在のプレイヤーをハイライトするためにIDを渡す
+            onPlayerSelect={handleStartEdit}
+            currentPlayerId={currentPlayer?.id}
           />
         </section>
-        <section className='column-down'>
-        a
-        </section>
       </main>
+      <Timeline messages={timelineMessages} />
+      <EditPlayerModal
+        player={editingPlayer}
+        onSave={handleSaveEdit}
+        onCancel={() => setEditingPlayer(null)}
+      />
     </div>
   );
 }
