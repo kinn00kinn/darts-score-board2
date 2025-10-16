@@ -1,0 +1,76 @@
+/* PlayScreen: 中央カラムのレイアウトを制御 */
+.play-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 100%; /* 親カラムの高さいっぱいに広がる */
+  min-height: 0;
+}
+
+/* スコアボードと操作ボタンは高さを固定 */
+
+
+/* Dartboard: 残りのスペースをすべて使用する */
+.dartboard-container {
+  flex-grow: 1; /* ★最重要：残りの垂直スペースをすべて埋める */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0; /* ★最重要：コンテナ自体が縮小できるようにする */
+}
+
+.dartboard-svg {
+  display: block;
+  /* コンテナ内に収まるようにアスペクト比を保って縮小 */
+  object-fit: contain; 
+  width: 50%;
+  height: 50%;
+}
+
+.dartboard-svg [data-area] {
+  cursor: crosshair;
+  transition: opacity 0.1s ease-in-out;
+}
+.dartboard-svg [data-area]:hover {
+  opacity: 0.7;
+  stroke: var(--highlight-color);
+  stroke-width: 4px;
+}
+
+
+/* Gacha & Leaderboard: 各カラムの高さいっぱいに広がるように */
+.gacha, .leaderboard {
+  flex-grow: 1;
+}
+.gacha-display {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.leaderboard ol {
+  flex-grow: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+
+/* --- 以下、既存のスタイル --- */
+
+.gacha-result { font-size: 8rem; font-weight: bold; color: var(--highlight-color); animation: fadeIn 0.5s ease; }
+.gacha-placeholder { text-align: center; opacity: 0.6; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+.gacha-spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--accent-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.leaderboard li { display: flex; justify-content: space-between; padding: 10px; border-radius: 5px; margin-bottom: 8px; transition: background-color 0.3s; }
+.leaderboard li:nth-child(odd) { background-color: rgba(0,0,0,0.2); }
+.leaderboard li span { font-weight: bold; color: var(--accent-color); }
+.leaderboard .leaderboard-controls { margin-top: 15px; display: flex; gap: 10px; flex-shrink: 0; }
+.leaderboard .leaderboard-controls button { flex-grow: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; }
+.leaderboard li.current-player { background-color: rgba(0, 188, 212, 0.3) !important; border-left: 4px solid var(--accent-color); }
+.player-name-input { background: transparent; border: none; color: var(--text-color); font-size: 1rem; width: 60%; padding: 5px; border-radius: 4px; }
+.player-name-input:focus { outline: none; background-color: rgba(0, 0, 0, 0.3); }
+.leaderboard .reset-btn { background-color: var(--danger-color); color: white; }
+.fullscreen-btn { position: absolute; top: 20px; right: 20px; width:40px; height: 40px; background: var(--secondary-bg); color: var(--text-color); border: 1px solid #444; font-size: 20px; z-index: 1000; display: flex;justify-content: center; /* 水平方向の中央揃え */align-items: center;     /* 垂直方向の中央揃え */cursor: pointer; }
