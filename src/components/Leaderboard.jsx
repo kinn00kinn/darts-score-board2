@@ -1,50 +1,27 @@
-import React, { useState } from 'react';
-import './components.css';
+// src/components/Leaderboard.jsx
+import React from 'react';
 
-const Leaderboard = ({ players, onAddPlayer, onReset, onPlayerSelect, currentPlayerId }) => {
-  const [newPlayerName, setNewPlayerName] = useState('');
-
-  const handleAddPlayer = () => {
-    if (newPlayerName.trim()) {
-      onAddPlayer(newPlayerName.trim());
-      setNewPlayerName('');
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleAddPlayer();
-    }
-  };
-
+const Leaderboard = ({ players, onPlayerSelect, onResetScores, onNewGame }) => {
   return (
-    <div className="leaderboard widget">
-      <h3>👑 LEADERBOARD (Top 10)</h3>
+    <div className="leaderboard-container">
+      <h2>👑 LEADERBOARD</h2>
       <ol className="player-list">
-        {players.slice(0, 10).map((player) => (
+        {players.map((player, index) => (
           <li
             key={player.id}
-            className={`player-item ${player.id === currentPlayerId ? 'current-player' : ''}`}
+            className={`player-item rank-${index + 1}`}
             onClick={() => onPlayerSelect(player)}
           >
-            <span className="player-name">{player.name}</span>
-            <span className="player-score">{player.score}</span>
+            <span className="rank">{index + 1}</span>
+            <span className="name">{player.name}</span>
+            <span className="score">{player.score.toLocaleString()}</span>
           </li>
         ))}
+        {players.length === 0 && <p className="no-players">プレイヤーがいません</p>}
       </ol>
       <div className="leaderboard-controls">
-        <div className="add-player-section">
-          <input
-            type="text"
-            className="add-player-input"
-            placeholder="新しいプレイヤー名"
-            value={newPlayerName}
-            onChange={(e) => setNewPlayerName(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleAddPlayer} className="add-btn">追加</button>
-        </div>
-        <button onClick={onReset} className="reset-btn">スコアリセット</button>
+        <button onClick={onResetScores} className="control-btn">スコアリセット</button>
+        <button onClick={onNewGame} className="control-btn new-game">新しいゲーム</button>
       </div>
     </div>
   );

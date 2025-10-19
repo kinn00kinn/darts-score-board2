@@ -1,96 +1,128 @@
+// src/App.jsx
 import React, { useState } from 'react';
-import Gacha from './components/Gacha';
-import PlayScreen from './components/PlayScreen';
+import PlayerSetup from './components/PlayerSetup';
+import DartArea from './components/DartArea';
 import Leaderboard from './components/Leaderboard';
 import FullscreenButton from './components/FullscreenButton';
-import Timeline from './components/Timeline';
 import EditPlayerModal from './components/EditPlayerModal';
+import GachaModal from './components/GachaModal';
 import './App.css';
 
 function App() {
-  const [players, setPlayers] = useState([]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [gachaTrigger, setGachaTrigger] = useState(0);
-  const [timelineMessages, setTimelineMessages] = useState([]);
+  const [gameState, setGameState] = useState('setup'); // 'setup' or 'playing'
+  const [players, setPlayers] = useState([]); // プレイヤー情報（スコア順でソートされる）
+  const [turnOrder, setTurnOrder] = useState([]); // ターンの順番を管理するIDの配列
+  const [currentTurnIndex, setCurrentTurnIndex] = useState(0); // 現在のターンが何番目か
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [isGachaVisible, setIsGachaVisible] = useState(false);
 
-  const handleStartEdit = (player) => {
-    setEditingPlayer(player);
+  // ゲームを開始する
+  const handleGameStart = (nicknames) => {
+    const initialPlayers = nicknames.map((name, index) => ({
+      id: Date.now() + index,
+      name,
+      score: 0,
+    }));
+    setPlayers(initialPlayers);
+    setTurnOrder(initialPlayers.map(p => p.id)); // プレイヤーIDの順序を保存
+    setCurrentTurnIndex(0);
+    setGameState('playing');
   };
 
-  const handleSaveEdit = (updatedPlayer) => {
-    const sortedPlayers = players
-      .map(p => (p.id === updatedPlayer.id ? updatedPlayer : p))
-      .sort((a, b) => b.score - a.score); // Sort after editing
-    setPlayers(sortedPlayers);
-    setEditingPlayer(null);
-  };
-
+  // ターンを終了し、スコアを更新する
   const handleTurnEnd = (turnScore) => {
     if (players.length === 0) return;
 
-    const updatedPlayers = [...players];
-    const player = updatedPlayers[currentPlayerIndex];
-    player.score += turnScore;
+    // 現在のターンプレイヤーのIDを取得
+    const currentPlayerId = turnOrder[currentTurnIndex];
 
-    const message = `${player.name} が ${turnScore} 点獲得！`;
-    setTimelineMessages(prev => [...prev, message]);
+    // 該当プレイヤーのスコアを更新
+    const updatedPlayers = players.map(p => {
+      if (p.id === currentPlayerId) {
+        return { ...p, score: p.score + turnScore };
+      }
+      return p;
+    });
 
-    const sortedPlayers = updatedPlayers.sort((a, b) => b.score - a.score);
+    // スコア順にソートしてstateを更新（リーダーボード表示用）
+    const sortedPlayers = [...updatedPlayers].sort((a, b) => b.score - a.score);
     setPlayers(sortedPlayers);
 
-    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    setCurrentPlayerIndex(nextPlayerIndex);
+    // 次のプレイヤーのターンへ
+    const nextTurnIndex = (currentTurnIndex + 1) % players.length;
+    setCurrentTurnIndex(nextTurnIndex);
 
-    setGachaTrigger(prev => prev + 1);
+    // ガチャをトリガー
+    setIsGachaVisible(true);
   };
 
-  const addPlayer = (name) => {
-    const newPlayer = {
-      id: Date.now(),
-      name: name,
-      score: 0,
-    };
-    setPlayers(prevPlayers => [...prevPlayers, newPlayer]);
-  };
+  const handleGachaEnd = () => setIsGachaVisible(false);
+  const handleStartEdit = (player) => setEditingPlayer(player);
 
+  const handleSaveEdit = (updatedPlayer) => {
+    const newPlayers = players.map(p => (p.id === updatedPlayer.id ? updatedPlayer : p));
+    const sortedPlayers = [...newPlayers].sort((a, b) => b.score - a.score);
+    setPlayers(sortedPlayers);
+    setEditingPlayer(null);
+  };
+  
   const resetGame = () => {
     setPlayers(players.map(p => ({ ...p, score: 0 })));
-    setCurrentPlayerIndex(0);
-    setTimelineMessages([]);
+    setCurrentTurnIndex(0);
+  };
+  
+  const newGame = () => {
+    setPlayers([]);
+    setTurnOrder([]);
+    setGameState('setup');
   };
 
-  const currentPlayer = players.length > 0 ? players[currentPlayerIndex] : null;
+  // 現在のターンプレイヤーの情報を取得
+  const currentPlayerId = turnOrder[currentTurnIndex];
+  const currentPlayer = players.find(p => p.id === currentPlayerId);
+
+  if (gameState === 'setup') {
+    return (
+      <div id="app-container">
+        <div className="app-background"></div>
+        <PlayerSetup onGameStart={handleGameStart} />
+      </div>
+    );
+  }
 
   return (
     <div id="app-container">
+      <div className="app-background"></div>
       <FullscreenButton />
-      <main className="dashboard-grid">
-        <section className="column-left">
-          <Gacha trigger={gachaTrigger} />
-        </section>
-        <section className="column-center">
-          <PlayScreen
-            key={currentPlayer?.id || 'no-player'}
+
+      <main className="main-layout">
+        <section className="left-panel">
+          <DartArea
+            key={currentPlayer?.id} // プレイヤーが変わるたびにリセット
             player={currentPlayer}
             onTurnEnd={handleTurnEnd}
           />
         </section>
-        <section className="column-right">
+
+        <section className="right-panel">
           <Leaderboard
-            players={players}
-            onAddPlayer={addPlayer}
-            onReset={resetGame}
+            players={players} // スコア順にソートされたリストを渡す
             onPlayerSelect={handleStartEdit}
-            currentPlayerId={currentPlayer?.id}
+            onResetScores={resetGame}
+            onNewGame={newGame}
           />
         </section>
       </main>
-      <Timeline messages={timelineMessages} />
+
       <EditPlayerModal
         player={editingPlayer}
         onSave={handleSaveEdit}
         onCancel={() => setEditingPlayer(null)}
+      />
+      
+      <GachaModal
+        isVisible={isGachaVisible}
+        onGachaEnd={handleGachaEnd}
       />
     </div>
   );
