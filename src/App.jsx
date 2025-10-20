@@ -1,96 +1,99 @@
+// src/App.jsx
 import React, { useState } from 'react';
-import Gacha from './components/Gacha';
-import PlayScreen from './components/PlayScreen';
+// PlayerSetupは不要になったため削除
+import DartArea from './components/DartArea';
 import Leaderboard from './components/Leaderboard';
 import FullscreenButton from './components/FullscreenButton';
-import Timeline from './components/Timeline';
 import EditPlayerModal from './components/EditPlayerModal';
+import GachaModal from './components/GachaModal';
 import './App.css';
 
 function App() {
-  const [players, setPlayers] = useState([]);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [gachaTrigger, setGachaTrigger] = useState(0);
-  const [timelineMessages, setTimelineMessages] = useState([]);
+  const [players, setPlayers] = useState([]); // プレイヤー情報の配列のみ管理
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [isGachaVisible, setIsGachaVisible] = useState(false);
 
-  const handleStartEdit = (player) => {
-    setEditingPlayer(player);
+  // 新しいロジック：スコアを追加または更新する関数
+  const handleAddOrUpdateScore = (name, score) => {
+    // if (score === 0) return; // スコアが0の場合は何もしない
+
+    const trimmedName = name.trim();
+    const existingPlayer = players.find(p => p.name.toLowerCase() === trimmedName.toLowerCase());
+
+    let updatedPlayers;
+
+    if (existingPlayer) {
+      // 既に存在するプレイヤーの場合、スコアを加算
+      updatedPlayers = players.map(p => 
+        p.id === existingPlayer.id ? { ...p, score: p.score + score } : p
+      );
+    } else {
+      // 新しいプレイヤーの場合、リストに追加
+      const newPlayer = {
+        id: Date.now(),
+        name: trimmedName,
+        score: score,
+      };
+      updatedPlayers = [...players, newPlayer];
+    }
+
+    // スコア順にソートしてstateを更新
+    const sortedPlayers = updatedPlayers.sort((a, b) => b.score - a.score);
+    setPlayers(sortedPlayers);
+    setIsGachaVisible(true); // ガチャをトリガー
   };
 
+  const handleGachaEnd = () => setIsGachaVisible(false);
+  const handleStartEdit = (player) => setEditingPlayer(player);
+
   const handleSaveEdit = (updatedPlayer) => {
-    const sortedPlayers = players
-      .map(p => (p.id === updatedPlayer.id ? updatedPlayer : p))
-      .sort((a, b) => b.score - a.score); // Sort after editing
+    const newPlayers = players.map(p => (p.id === updatedPlayer.id ? updatedPlayer : p));
+    const sortedPlayers = [...newPlayers].sort((a, b) => b.score - a.score);
     setPlayers(sortedPlayers);
     setEditingPlayer(null);
   };
-
-  const handleTurnEnd = (turnScore) => {
-    if (players.length === 0) return;
-
-    const updatedPlayers = [...players];
-    const player = updatedPlayers[currentPlayerIndex];
-    player.score += turnScore;
-
-    const message = `${player.name} が ${turnScore} 点獲得！`;
-    setTimelineMessages(prev => [...prev, message]);
-
-    const sortedPlayers = updatedPlayers.sort((a, b) => b.score - a.score);
-    setPlayers(sortedPlayers);
-
-    const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    setCurrentPlayerIndex(nextPlayerIndex);
-
-    setGachaTrigger(prev => prev + 1);
-  };
-
-  const addPlayer = (name) => {
-    const newPlayer = {
-      id: Date.now(),
-      name: name,
-      score: 0,
-    };
-    setPlayers(prevPlayers => [...prevPlayers, newPlayer]);
-  };
-
-  const resetGame = () => {
+  
+  // スコアのみをリセット
+  const resetScores = () => {
     setPlayers(players.map(p => ({ ...p, score: 0 })));
-    setCurrentPlayerIndex(0);
-    setTimelineMessages([]);
   };
-
-  const currentPlayer = players.length > 0 ? players[currentPlayerIndex] : null;
+  
+  // 全てのプレイヤーを削除して最初から
+  const newGame = () => {
+    console.log(players)
+    setPlayers([]);
+  };
 
   return (
     <div id="app-container">
+      <div className="app-background"></div>
       <FullscreenButton />
-      <main className="dashboard-grid">
-        <section className="column-left">
-          <Gacha trigger={gachaTrigger} />
+
+      <main className="main-layout">
+        <section className="left-panel">
+          {/* ↓ onAddScoreという名前で新しい関数を渡す */}
+          <DartArea onAddScore={handleAddOrUpdateScore} />
         </section>
-        <section className="column-center">
-          <PlayScreen
-            key={currentPlayer?.id || 'no-player'}
-            player={currentPlayer}
-            onTurnEnd={handleTurnEnd}
-          />
-        </section>
-        <section className="column-right">
+
+        <section className="right-panel">
           <Leaderboard
             players={players}
-            onAddPlayer={addPlayer}
-            onReset={resetGame}
             onPlayerSelect={handleStartEdit}
-            currentPlayerId={currentPlayer?.id}
+            onResetScores={resetScores}
+            onNewGame={newGame}
           />
         </section>
       </main>
-      <Timeline messages={timelineMessages} />
+
       <EditPlayerModal
         player={editingPlayer}
         onSave={handleSaveEdit}
         onCancel={() => setEditingPlayer(null)}
+      />
+      
+      <GachaModal
+        isVisible={isGachaVisible}
+        onGachaEnd={handleGachaEnd}
       />
     </div>
   );
