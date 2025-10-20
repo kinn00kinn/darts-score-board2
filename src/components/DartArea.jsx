@@ -14,7 +14,9 @@ const getScoreValue = (area) => {
   return 0;
 };
 
-const DartArea = ({ player, onTurnEnd }) => {
+// 親から渡されるpropをonAddScoreに変更
+const DartArea = ({ onAddScore }) => {
+  const [playerName, setPlayerName] = useState(''); // 名前を管理するstateを追加
   const [turnScore, setTurnScore] = useState(0);
   const [throws, setThrows] = useState([]);
   const [hoveredArea, setHoveredArea] = useState(null);
@@ -38,17 +40,36 @@ const DartArea = ({ player, onTurnEnd }) => {
     setThrows([...throws]);
   };
 
-  const confirmTurn = () => {
-    onTurnEnd(turnScore);
+  // 確定ボタンのロジックを変更
+  const confirmScore = () => {
+    // 名前の入力チェック
+    if (!playerName.trim()) {
+      alert('名前を入力してください');
+      return;
+    }
+    // 親の関数を呼び出し、名前とスコアを渡す
+    onAddScore(playerName, turnScore);
+
+    // 入力内容をリセット
+    setPlayerName('');
+    resetTurn();
   };
 
   return (
     <div className="dart-area-container">
       <div className="control-panel">
-        <div className="player-display">
-          <span>Current Player</span>
-          <h2>{player ? player.name : 'No Player'}</h2>
+        {/* 名前入力フォームに変更 */}
+        <div className="player-input-area">
+          <span>Player Name</span>
+          <input
+            type="text"
+            className="player-name-input"
+            placeholder="名前を入力..."
+            value={playerName}
+            onChange={(e) => setPlayerName(e.target.value)}
+          />
         </div>
+
         <div className="score-display">
           <span>Turn Score</span>
           <p>{turnScore}</p>
@@ -59,7 +80,7 @@ const DartArea = ({ player, onTurnEnd }) => {
         <div className="action-buttons">
           <button onClick={undoLastThrow} disabled={throws.length === 0}>Undo</button>
           <button onClick={resetTurn} className="reset">Reset</button>
-          <button onClick={confirmTurn} className="confirm">確定</button>
+          <button onClick={confirmScore} className="confirm">スコアを追加</button>
         </div>
       </div>
 

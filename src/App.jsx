@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState } from 'react';
-import PlayerSetup from './components/PlayerSetup';
+// PlayerSetupは不要になったため削除
 import DartArea from './components/DartArea';
 import Leaderboard from './components/Leaderboard';
 import FullscreenButton from './components/FullscreenButton';
@@ -9,51 +9,38 @@ import GachaModal from './components/GachaModal';
 import './App.css';
 
 function App() {
-  const [gameState, setGameState] = useState('setup'); // 'setup' or 'playing'
-  const [players, setPlayers] = useState([]); // プレイヤー情報（スコア順でソートされる）
-  const [turnOrder, setTurnOrder] = useState([]); // ターンの順番を管理するIDの配列
-  const [currentTurnIndex, setCurrentTurnIndex] = useState(0); // 現在のターンが何番目か
+  const [players, setPlayers] = useState([]); // プレイヤー情報の配列のみ管理
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [isGachaVisible, setIsGachaVisible] = useState(false);
 
-  // ゲームを開始する
-  const handleGameStart = (nicknames) => {
-    const initialPlayers = nicknames.map((name, index) => ({
-      id: Date.now() + index,
-      name,
-      score: 0,
-    }));
-    setPlayers(initialPlayers);
-    setTurnOrder(initialPlayers.map(p => p.id)); // プレイヤーIDの順序を保存
-    setCurrentTurnIndex(0);
-    setGameState('playing');
-  };
+  // 新しいロジック：スコアを追加または更新する関数
+  const handleAddOrUpdateScore = (name, score) => {
+    // if (score === 0) return; // スコアが0の場合は何もしない
 
-  // ターンを終了し、スコアを更新する
-  const handleTurnEnd = (turnScore) => {
-    if (players.length === 0) return;
+    const trimmedName = name.trim();
+    const existingPlayer = players.find(p => p.name.toLowerCase() === trimmedName.toLowerCase());
 
-    // 現在のターンプレイヤーのIDを取得
-    const currentPlayerId = turnOrder[currentTurnIndex];
+    let updatedPlayers;
 
-    // 該当プレイヤーのスコアを更新
-    const updatedPlayers = players.map(p => {
-      if (p.id === currentPlayerId) {
-        return { ...p, score: p.score + turnScore };
-      }
-      return p;
-    });
+    if (existingPlayer) {
+      // 既に存在するプレイヤーの場合、スコアを加算
+      updatedPlayers = players.map(p => 
+        p.id === existingPlayer.id ? { ...p, score: p.score + score } : p
+      );
+    } else {
+      // 新しいプレイヤーの場合、リストに追加
+      const newPlayer = {
+        id: Date.now(),
+        name: trimmedName,
+        score: score,
+      };
+      updatedPlayers = [...players, newPlayer];
+    }
 
-    // スコア順にソートしてstateを更新（リーダーボード表示用）
-    const sortedPlayers = [...updatedPlayers].sort((a, b) => b.score - a.score);
+    // スコア順にソートしてstateを更新
+    const sortedPlayers = updatedPlayers.sort((a, b) => b.score - a.score);
     setPlayers(sortedPlayers);
-
-    // 次のプレイヤーのターンへ
-    const nextTurnIndex = (currentTurnIndex + 1) % players.length;
-    setCurrentTurnIndex(nextTurnIndex);
-
-    // ガチャをトリガー
-    setIsGachaVisible(true);
+    setIsGachaVisible(true); // ガチャをトリガー
   };
 
   const handleGachaEnd = () => setIsGachaVisible(false);
@@ -66,29 +53,16 @@ function App() {
     setEditingPlayer(null);
   };
   
-  const resetGame = () => {
+  // スコアのみをリセット
+  const resetScores = () => {
     setPlayers(players.map(p => ({ ...p, score: 0 })));
-    setCurrentTurnIndex(0);
   };
   
+  // 全てのプレイヤーを削除して最初から
   const newGame = () => {
+    console.log(players)
     setPlayers([]);
-    setTurnOrder([]);
-    setGameState('setup');
   };
-
-  // 現在のターンプレイヤーの情報を取得
-  const currentPlayerId = turnOrder[currentTurnIndex];
-  const currentPlayer = players.find(p => p.id === currentPlayerId);
-
-  if (gameState === 'setup') {
-    return (
-      <div id="app-container">
-        <div className="app-background"></div>
-        <PlayerSetup onGameStart={handleGameStart} />
-      </div>
-    );
-  }
 
   return (
     <div id="app-container">
@@ -97,18 +71,15 @@ function App() {
 
       <main className="main-layout">
         <section className="left-panel">
-          <DartArea
-            key={currentPlayer?.id} // プレイヤーが変わるたびにリセット
-            player={currentPlayer}
-            onTurnEnd={handleTurnEnd}
-          />
+          {/* ↓ onAddScoreという名前で新しい関数を渡す */}
+          <DartArea onAddScore={handleAddOrUpdateScore} />
         </section>
 
         <section className="right-panel">
           <Leaderboard
-            players={players} // スコア順にソートされたリストを渡す
+            players={players}
             onPlayerSelect={handleStartEdit}
-            onResetScores={resetGame}
+            onResetScores={resetScores}
             onNewGame={newGame}
           />
         </section>

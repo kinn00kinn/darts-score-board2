@@ -110,6 +110,8 @@ body {
   justify-content: center;
   min-height: 0;
   position: relative;
+  /* 👇 この一行を追加 */
+  transform: translate(-30px, -30px);
 }
 .dartboard-svg { display: block; object-fit: contain; width: 100%; height: 100%; max-height: 60vh; }
 .dartboard-svg [data-area]:hover { opacity: 0.7; stroke: var(--highlight-color); stroke-width: 4px; cursor: pointer; }
@@ -194,3 +196,25 @@ body {
 .setup-controls { display: flex; gap: 10px; margin-top: 20px; }
 .setup-controls button { flex-grow: 1; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; }
 .start-btn { background-color: var(--accent-color); color: var(--primary-bg); font-weight: bold; }
+/* App.css の末尾に追記 */
+
+.player-input-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+.player-input-area span {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+.player-name-input {
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 1.5rem;
+  text-align: center;
+}
