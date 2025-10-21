@@ -46,15 +46,15 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
       <p>ダーツボード調整</p>
       <div>
         <label>横 (X): {boardOffset.x}px</label>
-        <input type="range" min="-100" max="100" value={boardOffset.x} onChange={(e) => setBoardOffset(prev => ({ ...prev, x: parseInt(e.target.value) }))} />
+        <input type="range" min="-200" max="200" value={boardOffset.x} onChange={(e) => setBoardOffset(prev => ({ ...prev, x: parseInt(e.target.value) }))} />
       </div>
       <div>
         <label>縦 (Y): {boardOffset.y}px</label>
-        <input type="range" min="-100" max="100" value={boardOffset.y} onChange={(e) => setBoardOffset(prev => ({ ...prev, y: parseInt(e.target.value) }))} />
+        <input type="range" min="-200" max="200" value={boardOffset.y} onChange={(e) => setBoardOffset(prev => ({ ...prev, y: parseInt(e.target.value) }))} />
       </div>
       <div>
         <label>大きさ: {boardScale.toFixed(2)}</label>
-        <input type="range" min="0.5" max="1.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
+        <input type="range" min="0.1" max="2.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
       </div>
     </div>
   );

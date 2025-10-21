@@ -105,10 +105,10 @@ body {
 .player-display h2 { margin: 5px 0 0 0; font-size: .2rem; color: var(--accent-color); line-height: 1.2; }
 .score-display p { margin: 5px 0 0 0; font-size: 3rem; font-weight: bold; color: var(--highlight-color); }
 .throw-history {
-  font-size: 1.5rem;      /* フォントサイズを少し大きく */
+  font-size: 1.3rem;      /* フォントサイズを少し大きく */
   opacity: 1;             /* 透明度をなくす */
   height: 1.2em;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.0px;
   color: rgba(0,0,0,1); /* スコアと同じハイライトカラー（黄色）に変更 */
   font-weight: bold;      /* 太字にする */
   text-shadow: 0 1px 3px var(--highlight-color); /* 文字に影をつけて読みやすくする */
