@@ -27,8 +27,6 @@ function App() {
   const [celebration, setCelebration] = useState({ show: false, name: '' });
   const [showDevControls, setShowDevControls] = useState(true);
   const [pendingCelebration, setPendingCelebration] = useState(null);
-  // ▼▼▼ 削除：管理ボタン用のstateは不要になったため削除 ▼▼▼
-  // const [showAdminControls, setShowAdminControls] = useState(true);
 
   // players stateが変更されるたびに、その内容をlocalStorageに保存する
   useEffect(() => {
@@ -93,6 +91,12 @@ function App() {
     setEditingPlayer(null);
   };
 
+  // ▼▼▼ 追加：プレイヤー削除のロジック ▼▼▼
+  const handleDeletePlayer = (playerId) => {
+    setPlayers(prevPlayers => prevPlayers.filter(p => p.id !== playerId));
+    setEditingPlayer(null); // 削除が完了したらモーダルを閉じる
+  };
+
   const resetScores = () => {
     setPlayers(players.map(p => ({ ...p, score: 0 })));
   };
@@ -111,12 +115,10 @@ function App() {
     <div id="app-container">
       <div className="app-background"></div>
       
-      {/* ▼▼▼ 削除：管理ボタンは一本化されたため削除 ▼▼▼ */}
-      
       <button 
         className="dev-toggle-btn" 
         onClick={() => setShowDevControls(!showDevControls)}
-        title="調整・管理パネルの表示/非表示" // titleを分かりやすく変更
+        title="調整・管理パネルの表示/非表示"
       >
         🛠️
       </button>
@@ -140,7 +142,6 @@ function App() {
             onPlayerSelect={handleStartEdit}
             onResetScores={resetScores}
             onNewGame={newGame}
-            // ▼▼▼ 変更：調整パネルの表示状態(showDevControls)を渡す ▼▼▼
             showAdminControls={showDevControls}
           />
         </section>
@@ -150,6 +151,8 @@ function App() {
         player={editingPlayer}
         onSave={handleSaveEdit}
         onCancel={() => setEditingPlayer(null)}
+        // ▼▼▼ 追加：削除関数をpropとして渡す ▼▼▼
+        onDelete={handleDeletePlayer}
       />
       
       <GachaModal

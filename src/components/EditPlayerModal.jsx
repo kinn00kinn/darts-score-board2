@@ -1,7 +1,8 @@
 // src/components/EditPlayerModal.jsx
 import React, { useState, useEffect } from 'react';
 
-const EditPlayerModal = ({ player, onSave, onCancel }) => {
+// ▼▼▼ 変更：propsにonDeleteを追加 ▼▼▼
+const EditPlayerModal = ({ player, onSave, onCancel, onDelete }) => {
   const [name, setName] = useState('');
   const [score, setScore] = useState(0);
 
@@ -20,6 +21,14 @@ const EditPlayerModal = ({ player, onSave, onCancel }) => {
     const newScore = parseInt(score, 10);
     if (!isNaN(newScore)) {
       onSave({ ...player, name, score: newScore });
+    }
+  };
+
+  // ▼▼▼ 追加：削除ボタンクリック時の処理 ▼▼▼
+  const handleDelete = () => {
+    // 確認ダイアログを表示
+    if (window.confirm(`本当にプレイヤー「${player.name}」を削除しますか？`)) {
+      onDelete(player.id);
     }
   };
 
@@ -46,6 +55,9 @@ const EditPlayerModal = ({ player, onSave, onCancel }) => {
           />
         </div>
         <div className="modal-actions">
+          {/* ▼▼▼ 追加：削除ボタン ▼▼▼ */}
+          <button onClick={handleDelete} className="btn-delete">削除</button>
+          
           <button onClick={onCancel} className="btn-cancel">キャンセル</button>
           <button onClick={handleSave} className="btn-save">保存</button>
         </div>
