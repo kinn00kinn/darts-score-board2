@@ -1,16 +1,81 @@
-# React + Vite
+# Darts Score Board 🎯
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 概要
 
-Currently, two official plugins are available:
+このプロジェクトは、**文化祭のダーツ屋さん**で利用するために開発されたスコアボードアプリケーションです。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+来場したお客様のスコアをその場で入力し、プロジェクターで壁やスクリーンに投影して使用することを想定しています。リアルタイムで更新されるスコアやアニメーション演出によって、お客様自身はもちろん、周りで見ている観客も一体となってダーツを楽しめるような、エンターテインメント性豊かな空間を作り出すことを目的としています。
 
-## React Compiler
+![alt text](/README_src/image-7.png)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ 主な機能
 
-## Expanding the ESLint configuration
+  * **プロジェクションマッピング**: Webカメラ映像の上にスコアボードを重ねて表示し、位置や大きさを直感的に調整できます。
+  * **リアルタイムスコア計算**: クリックされた場所の点数を自動で計算し、ラウンドごとのスコアを記録します。
+  * **柔軟なスコア修正**: 入力ミスがあった場合でも、`Undo`や`Reset`、さらにはスコア確定後でも簡単に修正が可能です。
+  * **演出アニメーション**: スコアに応じて簡単なアニメーションが再生され、ゲームを盛り上げます。
+  * **マルチプレイヤー対応**: 複数のプレイヤー名を登録して、対戦形式で楽しめます。
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🔧 使用技術
+
+  * **フロントエンド**: HTML, CSS, JavaScript (TypeScript)
+  * **フレームワーク**: React / Vue.js のモダンなフレームワーク
+  * **ビルドツール**: Vite
+  * **デプロイ**: Vercel
+
+## 🚀 使い方
+
+### 1\. Webで利用する (推奨)
+
+最も簡単な方法です。以下のリンクにアクセスするだけで、すぐにアプリケーションを利用できます。
+
+**[https://darts-score-board2.vercel.app/](https://darts-score-board2.vercel.app/)**
+
+### 2\. ローカル環境で起動する
+
+ご自身のPC上でソースコードから直接起動することも可能です。開発に参加したい場合や、オフラインで利用したい場合はこちらの手順をお試しください。
+
+**前提条件:**
+
+  * [Node.js](https://nodejs.org/) (LTS版を推奨)
+  * [Git](https://git-scm.com/)
+
+**手順:**
+
+1.  **リポジトリをクローンする**
+    ターミナル（コマンドプロンプトやPowerShell）を開き、任意のディレクトリで以下のコマンドを実行します。
+
+    ```bash
+    git clone https://github.com/kinn00kinn/darts-score-board2.git
+    ```
+
+2.  **ディレクトリを移動する**
+
+    ```bash
+    cd darts-score-board2
+    ```
+
+3.  **依存パッケージをインストールする**
+
+    ```bash
+    npm install
+    ```
+
+4.  **開発サーバーを起動する**
+
+    ```bash
+    npm run dev
+    ```
+
+    起動後、ターミナルに表示される `http://localhost:5173/` のようなURLにブラウザでアクセスしてください。
+
+## 📝 操作方法
+
+基本的な操作方法は、[こちらの取扱説明書](操作手順.md) をご参照ください。
+
+## 今後の展望
+
+  * 01 (ゼロワン) やクリケットなど、新しいゲームモードの追加
+  * サウンドエフェクトの実装
+  * 対戦成績の保存・閲覧機能
+
