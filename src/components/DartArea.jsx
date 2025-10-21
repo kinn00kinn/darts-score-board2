@@ -14,9 +14,9 @@ const getScoreValue = (area) => {
   return 0;
 };
 
-// 親から渡されるpropをonAddScoreに変更
-const DartArea = ({ onAddScore }) => {
-  const [playerName, setPlayerName] = useState(''); // 名前を管理するstateを追加
+// showDevControls propを追加
+const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoardScale, showDevControls }) => {
+  const [playerName, setPlayerName] = useState('');
   const [turnScore, setTurnScore] = useState(0);
   const [throws, setThrows] = useState([]);
   const [hoveredArea, setHoveredArea] = useState(null);
@@ -28,54 +28,50 @@ const DartArea = ({ onAddScore }) => {
     setTurnScore(prev => prev + score);
   };
 
-  const resetTurn = () => {
-    setThrows([]);
-    setTurnScore(0);
-  };
-
+  const resetTurn = () => { setThrows([]); setTurnScore(0); };
   const undoLastThrow = () => {
     if (throws.length === 0) return;
     const lastThrow = throws.pop();
     setTurnScore(prev => prev - lastThrow.score);
     setThrows([...throws]);
   };
-
-  // 確定ボタンのロジックを変更
   const confirmScore = () => {
-    // 名前の入力チェック
-    if (!playerName.trim()) {
-      alert('名前を入力してください');
-      return;
-    }
-    // 親の関数を呼び出し、名前とスコアを渡す
+    if (!playerName.trim()) { alert('名前を入力してください'); return; }
     onAddScore(playerName, turnScore);
-
-    // 入力内容をリセット
-    setPlayerName('');
-    resetTurn();
+    setPlayerName(''); resetTurn();
   };
+
+  const devControls = (
+    <div className="dev-controls">
+      <p>ダーツボード調整</p>
+      <div>
+        <label>横 (X): {boardOffset.x}px</label>
+        <input type="range" min="-100" max="100" value={boardOffset.x} onChange={(e) => setBoardOffset(prev => ({ ...prev, x: parseInt(e.target.value) }))} />
+      </div>
+      <div>
+        <label>縦 (Y): {boardOffset.y}px</label>
+        <input type="range" min="-100" max="100" value={boardOffset.y} onChange={(e) => setBoardOffset(prev => ({ ...prev, y: parseInt(e.target.value) }))} />
+      </div>
+      <div>
+        <label>大きさ: {boardScale.toFixed(2)}</label>
+        <input type="range" min="0.5" max="1.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
+      </div>
+    </div>
+  );
 
   return (
     <div className="dart-area-container">
+      {/* showDevControlsがtrueの時だけ表示 */}
+      {showDevControls && devControls}
       <div className="control-panel">
-        {/* 名前入力フォームに変更 */}
         <div className="player-input-area">
           <span>Player Name</span>
-          <input
-            type="text"
-            className="player-name-input"
-            placeholder="名前を入力..."
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-          />
+          <input type="text" className="player-name-input" placeholder="名前を入力..." value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
         </div>
-
         <div className="score-display">
           <span>Turn Score</span>
           <p>{turnScore}</p>
-          <div className="throw-history">
-            {throws.map((t) => t.area).join(' → ')}
-          </div>
+          <div className="throw-history">{throws.map((t) => t.area).join(' → ')}</div>
         </div>
         <div className="action-buttons">
           <button onClick={undoLastThrow} disabled={throws.length === 0}>Undo</button>
@@ -83,14 +79,9 @@ const DartArea = ({ onAddScore }) => {
           <button onClick={confirmScore} className="confirm">スコアを追加</button>
         </div>
       </div>
-
-      <div className="dartboard-wrapper">
+      <div className="dartboard-wrapper" style={{ transform: `translate(${boardOffset.x}px, ${boardOffset.y}px) scale(${boardScale})` }}>
         <Dartboard onHit={handleHit} onHover={setHoveredArea} />
-        {hoveredArea && (
-          <div className="hover-info">
-            {hoveredArea}: {getScoreValue(hoveredArea)}
-          </div>
-        )}
+        {hoveredArea && (<div className="hover-info">{hoveredArea}: {getScoreValue(hoveredArea)}</div>)}
       </div>
     </div>
   );
