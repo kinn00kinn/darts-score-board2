@@ -44,7 +44,7 @@ body {
   background-size: cover;
   background-position: center;
   z-index: -1;
-  filter: brightness(0.6);
+  /* filter: brightness(0.6); */
 }
 
 
@@ -104,7 +104,15 @@ body {
 .player-display span, .score-display span { font-size: 1rem; opacity: 0.8; }
 .player-display h2 { margin: 5px 0 0 0; font-size: .2rem; color: var(--accent-color); line-height: 1.2; }
 .score-display p { margin: 5px 0 0 0; font-size: 3rem; font-weight: bold; color: var(--highlight-color); }
-.throw-history { font-size: 0.9rem; opacity: 0.7; height: 1.2em; letter-spacing: 2px; }
+.throw-history {
+  font-size: 1.5rem;      /* フォントサイズを少し大きく */
+  opacity: 1;             /* 透明度をなくす */
+  height: 1.2em;
+  letter-spacing: 1.5px;
+  color: rgba(0,0,0,1); /* スコアと同じハイライトカラー（黄色）に変更 */
+  font-weight: bold;      /* 太字にする */
+  text-shadow: 0 1px 3px var(--highlight-color); /* 文字に影をつけて読みやすくする */
+}
 .action-buttons {
   display: flex;
   flex-direction: column;
@@ -170,6 +178,7 @@ body {
   cursor: pointer;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2);
   transition: transform 0.2s ease, background 0.3s ease; /* シンプルなアニメーション */
+  animation: item-appear 0.4s ease-out backwards; /* animationプロパティを追加 */
 }
 .player-item:hover {
   transform: scale(1.02); /* 少し拡大 */
@@ -196,21 +205,28 @@ body {
 }
 
 /* --- 1位〜3位の特別なスタイル --- */
+/* --- 1位〜3位の特別なスタイル (豪華な配色に変更) --- */
 .player-item.rank-1 {
-  background: linear-gradient(135deg, var(--rank1-color), #b8860b);
-  color: #111;
-  box-shadow: 0 5px 15px rgba(255,215,0,0.3);
-  border-left-color: gold;
+  background: radial-gradient(ellipse at top, #F7DEB8, #D4AF37);
+  color: #332400; /* 文字色を濃くして可読性を上げる */
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(255, 217, 1, 0.7);
+  border-left-color: #FFD700;
 }
 .player-item.rank-2 {
-  background: linear-gradient(135deg, var(--rank2-color), #808080);
-  color: #111;
-  border-left-color: silver;
+  background: radial-gradient(ellipse at top, #F0F0F0, #A8A8A8);
+  color: #222;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(192, 192, 192, 0.5);
+  border-left-color: #C0C0C0;
 }
 .player-item.rank-3 {
-  background: linear-gradient(135deg, var(--rank3-color), #8B4513);
-  color: #eee;
-  border-left-color: #b87333;
+  background: radial-gradient(ellipse at top, #D29A7D, #965A38);
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* 文字に影を追加 */
+  box-shadow: 0 0 15px rgba(205, 127, 50, 0.5);
+  border-left-color: #CD7F32;
 }
 .no-players { text-align: center; margin-top: 50px; opacity: 0.7; }
 .leaderboard-controls {
@@ -245,7 +261,17 @@ body {
 .modal-overlay { z-index: 2000; }
 .gacha-overlay video { max-width: 90%; max-height: 90%; border-radius: 10px; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+/* ▼▼▼ 追加：アイテム登場時のアニメーション ▼▼▼ */
+@keyframes item-appear {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 .modal-content { background-color: var(--secondary-bg); padding: 30px; border-radius: 12px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; margin-bottom: 8px; }
@@ -278,14 +304,28 @@ body {
 .dev-toggle-btn { right: 70px; } /* フルスクリーンボタンの隣に配置 */
 
 .player-input-area {
+  font-size: 1.2rem;
   display: flex; flex-direction: column; justify-content: center;
   gap: 8px; text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,1); /* 文字に影を追加 */
+}
+/* Turn Score の数値 */
+.score-display p {
+  margin: 5px 0 0 0;
+  font-size: 4rem; /* フォントサイズをさらに大きく */
+  font-weight: bold;
+  color: var(--highlight-color);
+  text-shadow: 0 0 10px var(--highlight-color); /* 光彩効果を追加 */
 }
 .player-input-area span { font-size: 1rem; opacity: 0.8; }
 .player-name-input {
-  background-color: var(--primary-bg); color: var(--text-color);
-  border: 1px solid #555; border-radius: 5px; padding: 10px;
-  font-size: 1.5rem; text-align: center;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 2rem; /* フォントサイズを大きく */
+  text-align: center;
 }
 
 .dev-controls {
