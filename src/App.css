@@ -284,6 +284,7 @@ body {
 /* ============================================= */
 /* その他のコンポーネント                        */
 /* ============================================= */
+/* ▼▼▼ 変更：不要になった.admin-toggle-btnをセレクタから削除 ▼▼▼ */
 .fullscreen-btn, .dev-toggle-btn {
   position: absolute;
   top: 20px;
@@ -302,6 +303,8 @@ body {
 }
 .fullscreen-btn { right: 20px; }
 .dev-toggle-btn { right: 70px; } /* フルスクリーンボタンの隣に配置 */
+/* ▼▼▼ 削除：不要になったため削除 ▼▼▼ */
+/* .admin-toggle-btn { right: 120px; } */
 
 .player-input-area {
   font-size: 1.2rem;

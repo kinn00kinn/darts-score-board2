@@ -1,11 +1,26 @@
 // src/components/Leaderboard.jsx
 import React from 'react';
 
-const Leaderboard = ({ players, onPlayerSelect, onResetScores, onNewGame }) => {
+// ▼▼▼ 変更：showAdminControls を props で受け取る ▼▼▼
+const Leaderboard = ({ players, onPlayerSelect, onResetScores, onNewGame, showAdminControls }) => {
+  
+  // ▼▼▼ 追加：スコアリセット時の確認処理 ▼▼▼
+  const handleResetScores = () => {
+    if (window.confirm('本当にすべてのスコアをリセットしますか？')) {
+      onResetScores();
+    }
+  };
+
+  // ▼▼▼ 追加：新しいゲーム開始時の確認処理 ▼▼▼
+  const handleNewGame = () => {
+    if (window.confirm('本当に新しいゲームを開始しますか？（すべてのプレイヤーが削除されます）')) {
+      onNewGame();
+    }
+  };
+
   return (
     <div className="leaderboard-container">
       <h2>👑 LEADERBOARD</h2>
-      {/* CSSの変更に伴い、動的なstyle指定を削除 */}
       <ol className="player-list">
         {players.length > 0 ? (
           players.map((player, index) => (
@@ -23,10 +38,15 @@ const Leaderboard = ({ players, onPlayerSelect, onResetScores, onNewGame }) => {
           <p className="no-players">プレイヤーがいません</p>
         )}
       </ol>
-      <div className="leaderboard-controls">
-        <button onClick={onResetScores} className="control-btn">スコアリセット</button>
-        <button onClick={onNewGame} className="control-btn new-game">新しいゲーム</button>
-      </div>
+      
+      {/* ▼▼▼ 変更：showAdminControls の値に応じてボタンエリアの表示を切り替える ▼▼▼ */}
+      {showAdminControls && (
+        <div className="leaderboard-controls">
+          {/* ▼▼▼ 変更：onClickに関数を設定 ▼▼▼ */}
+          <button onClick={handleResetScores} className="control-btn">スコアリセット</button>
+          <button onClick={handleNewGame} className="control-btn new-game">新しいゲーム</button>
+        </div>
+      )}
     </div>
   );
 };
