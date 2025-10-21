@@ -1,6 +1,10 @@
 // src/components/DartArea.jsx
 import React, { useState } from 'react';
 import Dartboard from './Dartboard';
+// ▼▼▼ 追加：音声ファイルをインポート ▼▼▼
+import dartHitSound from '../assets/sounds/dart-hit.mp3';
+import scoreAddSound from '../assets/sounds/score-add.mp3';
+// ▲▲▲ 追加 ▲▲▲
 
 const getScoreValue = (area) => {
   if (area === 'BULL') return 25;
@@ -14,15 +18,28 @@ const getScoreValue = (area) => {
   return 0;
 };
 
-// showDevControls propを追加
 const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoardScale, showDevControls }) => {
   const [playerName, setPlayerName] = useState('');
   const [turnScore, setTurnScore] = useState(0);
   const [throws, setThrows] = useState([]);
   const [hoveredArea, setHoveredArea] = useState(null);
 
+  // ▼▼▼ 追加：効果音を再生するヘルパー関数 ▼▼▼
+  const playSound = (soundFile) => {
+    try {
+      const audio = new Audio(soundFile);
+      audio.play();
+    } catch (error) {
+      console.error("効果音の再生に失敗しました:", error);
+    }
+  };
+  // ▲▲▲ 追加 ▲▲▲
+
   const handleHit = (area) => {
-    if (throws.length >= 3) return;
+    if (throws.length >= 5) return; // 投擲回数を5回に変更
+    
+    playSound(dartHitSound); // ダーツが刺さる音を再生
+
     const score = getScoreValue(area);
     setThrows([...throws, { area, score }]);
     setTurnScore(prev => prev + score);
@@ -37,6 +54,9 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
   };
   const confirmScore = () => {
     if (!playerName.trim()) { alert('名前を入力してください'); return; }
+
+    playSound(scoreAddSound); // スコア追加の音を再生
+
     onAddScore(playerName, turnScore);
     setPlayerName(''); resetTurn();
   };
@@ -46,22 +66,21 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
       <p>ダーツボード調整</p>
       <div>
         <label>横 (X): {boardOffset.x}px</label>
-        <input type="range" min="-200" max="200" value={boardOffset.x} onChange={(e) => setBoardOffset(prev => ({ ...prev, x: parseInt(e.target.value) }))} />
+        <input type="range" min="-100" max="100" value={boardOffset.x} onChange={(e) => setBoardOffset(prev => ({ ...prev, x: parseInt(e.target.value) }))} />
       </div>
       <div>
         <label>縦 (Y): {boardOffset.y}px</label>
-        <input type="range" min="-200" max="200" value={boardOffset.y} onChange={(e) => setBoardOffset(prev => ({ ...prev, y: parseInt(e.target.value) }))} />
+        <input type="range" min="-100" max="100" value={boardOffset.y} onChange={(e) => setBoardOffset(prev => ({ ...prev, y: parseInt(e.target.value) }))} />
       </div>
       <div>
         <label>大きさ: {boardScale.toFixed(2)}</label>
-        <input type="range" min="0.1" max="2.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
+        <input type="range" min="0.5" max="1.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
       </div>
     </div>
   );
 
   return (
     <div className="dart-area-container">
-      {/* showDevControlsがtrueの時だけ表示 */}
       {showDevControls && devControls}
       <div className="control-panel">
         <div className="player-input-area">
