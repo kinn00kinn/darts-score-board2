@@ -321,7 +321,53 @@ body {
   height: auto;
   padding: 0px 8px;
 }
-.leaderboard-container h2 { text-align: center; color: var(--accent-color); margin: 10px 0 20px 0; font-size: 2.5rem; flex-shrink: 0; }
+
+
+
+/* メインの見出しスタイル */
+.leaderboard-container h2 {
+    text-align: center;
+    color: #ffd700;
+    /* 縦幅を狭めるためにmarginとpaddingを調整 */
+    margin: 10px 0;
+    /* padding: 15px 0; */
+     font-size: 2.0rem; /*少しだけサイズを調整 */
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+                 0 0 10px rgba(255, 215, 0, 0.5);
+    position: relative; /* 王冠配置の基準 */
+}
+
+/* 王冠のアイコンを左上に配置 */
+.leaderboard-container h2::before {
+    content: '';
+    position: absolute;
+    /* 王冠の位置を微調整 */
+    top: -10px;
+    left: 15%; /* 中央寄せなので%で指定 */
+    width: 50px;
+    height: 50px;
+    /* SVGを直接埋め込むことで外部ファイルを不要に */
+    /* background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="%23ffd700"><path d="M143.5 240.5c-15-15-35.8-23.5-57.2-23.5c-44.2 0-80 35.8-80 80s35.8 80 80 80c21.4 0 42.2-8.5 57.2-23.5l1.5-1.5L160 337.5l-2.5-2.5L143.5 240.5zM368.5 240.5l-14 94.5l-2.5 2.5L352 337.5l1.5 1.5c15 15 35.8 23.5 57.2 23.5c44.2 0 80-35.8 80-80s-35.8-80-80-80c-21.4 0-42.2-8.5-57.2-23.5zM256 32c-17.7 0-32 14.3-32 32V288c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32zM128 96c0-17.7-14.3-32-32-32S64 78.3 64 96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V96zM384 96c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7 14.3 32 32 32s32-14.3 32-32V96z"/></svg>'); */
+    background-size: contain;
+    background-repeat: no-repeat;
+    transform: rotate(-15deg); /* 少し傾けて装飾性をアップ */
+}
+
+/* 見出しの下の装飾ライン */
+.leaderboard-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* 少し短くする */
+    height: 2px;
+    background: linear-gradient(to right, transparent, #c4a23a, transparent);
+}
+
+
 .leaderboard-actions {
   width: 100%;
   max-width: 360px;
@@ -367,7 +413,7 @@ body {
 }
 .player-item .rank {
   font-weight: bold;
-  font-size: 2.5rem;
+  font-size: 2.0rem;
   color: var(--accent-color);
   text-align: center;
   font-family: 'Georgia', serif;

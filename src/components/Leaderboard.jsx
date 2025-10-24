@@ -16,7 +16,7 @@ const Leaderboard = ({
 
   return (
     <div className="leaderboard-container"> 
-      <h2>👑 LEADERBOARD</h2>
+      <h2>LEADERBOARD</h2>
       <ol className="player-list">
         {players.length > 0 ? (
           players.map((player, index) => (
