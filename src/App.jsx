@@ -7,6 +7,7 @@ import EditPlayerModal from './components/EditPlayerModal';
 import GachaModal from './components/GachaModal';
 import CelebrationOverlay from './components/CelebrationOverlay';
 import './App.css';
+import scoreAddSound from './assets/sounds/score-add.mp3';
 
 function App() {
   // useStateの初期化関数でlocalStorageからデータを読み込む
@@ -27,6 +28,45 @@ function App() {
   const [celebration, setCelebration] = useState({ show: false, name: '' });
   const [showDevControls, setShowDevControls] = useState(true);
   const [pendingCelebration, setPendingCelebration] = useState(null);
+  const [currentPlayerName, setCurrentPlayerName] = useState('');
+  const [currentTurnScore, setCurrentTurnScore] = useState(0);
+  const [currentThrows, setCurrentThrows] = useState([]);
+
+  const clearCurrentTurn = () => {
+    setCurrentTurnScore(0);
+    setCurrentThrows([]);
+  };
+
+  const handleUndoThrow = () => {
+    setCurrentThrows(prevThrows => {
+      if (prevThrows.length === 0) {
+        return prevThrows;
+      }
+      const updatedThrows = prevThrows.slice(0, -1);
+      const lastThrow = prevThrows[prevThrows.length - 1];
+      setCurrentTurnScore(prevScore => prevScore - lastThrow.score);
+      return updatedThrows;
+    });
+  };
+
+  const handleConfirmCurrentTurn = () => {
+    const trimmedName = currentPlayerName.trim();
+    if (!trimmedName) {
+      alert('名前を入力してください');
+      return;
+    }
+
+    try {
+      const audio = new Audio(scoreAddSound);
+      audio.play();
+    } catch (error) {
+      console.error('効果音の再生に失敗しました:', error);
+    }
+
+    handleAddOrUpdateScore(trimmedName, currentTurnScore);
+    setCurrentPlayerName('');
+    clearCurrentTurn();
+  };
 
   // players stateが変更されるたびに、その内容をlocalStorageに保存する
   useEffect(() => {
@@ -102,6 +142,8 @@ function App() {
   };
 
   const newGame = () => {
+    clearCurrentTurn();
+    setCurrentPlayerName('');
     setPlayers([]);
     // localStorageのデータもクリアする
     try {
@@ -128,7 +170,6 @@ function App() {
       <main className="main-layout">
         <section className="left-panel">
           <DartArea
-            onAddScore={handleAddOrUpdateScore}
             boardOffset={boardOffset}
             setBoardOffset={setBoardOffset}
             boardScale={boardScale}
@@ -136,12 +177,23 @@ function App() {
             showDevControls={showDevControls}
             onResetScores={resetScores}
             onNewGame={newGame}
+            playerName={currentPlayerName}
+            turnScore={currentTurnScore}
+            setTurnScore={setCurrentTurnScore}
+            throws={currentThrows}
+            setThrows={setCurrentThrows}
           />
         </section>
         <section className="right-panel">
           <Leaderboard
             players={players}
             onPlayerSelect={handleStartEdit}
+            currentPlayerName={currentPlayerName}
+            currentThrows={currentThrows}
+            onPlayerNameChange={setCurrentPlayerName}
+            onUndoThrow={handleUndoThrow}
+            onResetTurn={clearCurrentTurn}
+            onConfirmScore={handleConfirmCurrentTurn}
           />
         </section>
       </main>

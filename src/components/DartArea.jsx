@@ -1,9 +1,8 @@
 // src/components/DartArea.jsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Dartboard from './Dartboard';
 // ▼▼▼ 追加：音声ファイルをインポート ▼▼▼
 import dartHitSound from '../assets/sounds/dart-hit.mp3';
-import scoreAddSound from '../assets/sounds/score-add.mp3';
 // ▲▲▲ 追加 ▲▲▲
 
 const getScoreValue = (area) => {
@@ -18,10 +17,20 @@ const getScoreValue = (area) => {
   return 0;
 };
 
-const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoardScale, showDevControls, onResetScores, onNewGame, }) => {
-  const [playerName, setPlayerName] = useState('');
-  const [turnScore, setTurnScore] = useState(0);
-  const [throws, setThrows] = useState([]);
+const DartArea = ({
+  boardOffset,
+  setBoardOffset,
+  boardScale,
+  setBoardScale,
+  showDevControls,
+  onResetScores,
+  onNewGame,
+  playerName,
+  turnScore,
+  setTurnScore,
+  throws,
+  setThrows,
+}) => {
   const [hoveredArea, setHoveredArea] = useState(null);
 
   // ▼▼▼ 追加：効果音を再生するヘルパー関数 ▼▼▼
@@ -49,32 +58,14 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
     }
   };
 
-
-
   const handleHit = (area) => {
     if (throws.length >= 5) return; // 投擲回数を5回に変更
-    
+
     playSound(dartHitSound); // ダーツが刺さる音を再生
 
     const score = getScoreValue(area);
-    setThrows([...throws, { area, score }]);
-    setTurnScore(prev => prev + score);
-  };
-
-  const resetTurn = () => { setThrows([]); setTurnScore(0); };
-  const undoLastThrow = () => {
-    if (throws.length === 0) return;
-    const lastThrow = throws.pop();
-    setTurnScore(prev => prev - lastThrow.score);
-    setThrows([...throws]);
-  };
-  const confirmScore = () => {
-    if (!playerName.trim()) { alert('名前を入力してください'); return; }
-
-    playSound(scoreAddSound); // スコア追加の音を再生
-
-    onAddScore(playerName, turnScore);
-    setPlayerName(''); resetTurn();
+    setThrows(prevThrows => [...prevThrows, { area, score }]);
+    setTurnScore(prevScore => prevScore + score);
   };
 
   const devControls = (
@@ -99,27 +90,37 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
     </div>
   );
 
+  const breadcrumbValues = useMemo(() => {
+    const values = [];
+    values.push(`${turnScore}`);
+    if (throws.length > 0) {
+      throws.forEach((t) => {
+        values.push(`${t.area} ${t.score}`);
+      });
+    }
+    return values;
+  }, [turnScore, throws]);
+
 
   return (
     <div className="dart-area-container">
       {showDevControls && devControls}
-      <div className="control-panel">
-        <div className="player-input-area">
-          <span>Player Name</span>
-          <input type="text" className="player-name-input" placeholder="名前を入力..." value={playerName} onChange={(e) => setPlayerName(e.target.value)} />
+      <div className="current-turn-overview">
+        <div className="simple-breadcrumb">
+          {breadcrumbValues.map((value, index) => (
+            <React.Fragment key={`${value}-${index}`}>
+              <span
+                className={`simple-crumb ${index === 0 ? 'simple-crumb-total' : ''}`.trim()}
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {value}
+              </span>
+              {index < breadcrumbValues.length - 1 && <span className="simple-crumb-arrow">›</span>}
+            </React.Fragment>
+          ))}
+          {breadcrumbValues.length === 0 && <span className="simple-crumb simple-crumb-empty">0</span>}
         </div>
-        <div className="score-display">
-          <span>Turn Score</span>
-          <p>{turnScore}</p>
-          <div className="throw-history">{throws.map((t) => t.area).join(' → ')}</div>
-        </div>
-        <div className="action-buttons">
-          <button onClick={undoLastThrow} disabled={throws.length === 0}>Undo</button>
-          <button onClick={resetTurn} className="reset">Reset</button>
-          <button onClick={confirmScore} className="confirm">スコアを追加</button>
-        </div>
-
-      </div> 
+      </div>
       <div className="dartboard-wrapper" style={{ transform: `translate(${boardOffset.x}px, ${boardOffset.y}px) scale(${boardScale})` }}>
         <Dartboard onHit={handleHit} onHover={setHoveredArea} />
         {hoveredArea && (<div className="hover-info">{hoveredArea}: {getScoreValue(hoveredArea)}</div>)}

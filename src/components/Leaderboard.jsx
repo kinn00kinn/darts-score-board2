@@ -2,9 +2,20 @@
 import React from 'react';
 
 // ▼▼▼ 変更：showAdminControls を props で受け取る ▼▼▼
-const Leaderboard = ({ players, onPlayerSelect }) => {
+const Leaderboard = ({
+  players,
+  onPlayerSelect,
+  currentPlayerName,
+  currentThrows,
+  onPlayerNameChange,
+  onUndoThrow,
+  onResetTurn,
+  onConfirmScore,
+}) => {
+  const hasThrows = currentThrows.length > 0;
+
   return (
-    <div className="leaderboard-container">
+    <div className="leaderboard-container"> 
       <h2>👑 LEADERBOARD</h2>
       <ol className="player-list">
         {players.length > 0 ? (
@@ -23,7 +34,22 @@ const Leaderboard = ({ players, onPlayerSelect }) => {
           <p className="no-players">プレイヤーがいません</p>
         )}
       </ol>
-      
+      <div className="current-turn-card">
+        <div className="player-input-area leaderboard-player-input">
+          <input
+            type="text"
+            className="player-name-input"
+            placeholder="名前を入力..."
+            value={currentPlayerName}
+            onChange={(e) => onPlayerNameChange?.(e.target.value)}
+          />
+          <button onClick={() => onConfirmScore?.()} className="confirm">追加</button>
+        </div>
+        <div className="leaderboard-actions action-buttons">
+          <button onClick={() => onUndoThrow?.()} disabled={!hasThrows}>Undo</button>
+          <button onClick={() => onResetTurn?.()} className="reset">Reset</button>
+        </div>
+      </div>
     </div>
   );
 };
