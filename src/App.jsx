@@ -134,15 +134,14 @@ function App() {
             boardScale={boardScale}
             setBoardScale={setBoardScale}
             showDevControls={showDevControls}
+            onResetScores={resetScores}
+            onNewGame={newGame}
           />
         </section>
         <section className="right-panel">
           <Leaderboard
             players={players}
             onPlayerSelect={handleStartEdit}
-            onResetScores={resetScores}
-            onNewGame={newGame}
-            showAdminControls={showDevControls}
           />
         </section>
       </main>

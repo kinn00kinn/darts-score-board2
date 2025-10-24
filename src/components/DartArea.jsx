@@ -18,7 +18,7 @@ const getScoreValue = (area) => {
   return 0;
 };
 
-const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoardScale, showDevControls }) => {
+const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoardScale, showDevControls, onResetScores, onNewGame, }) => {
   const [playerName, setPlayerName] = useState('');
   const [turnScore, setTurnScore] = useState(0);
   const [throws, setThrows] = useState([]);
@@ -34,6 +34,22 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
     }
   };
   // ▲▲▲ 追加 ▲▲▲
+
+    // ▼▼▼ 追加：スコアリセット時の確認処理 ▼▼▼
+  const handleResetScores = () => {
+    if (window.confirm('本当にすべてのスコアをリセットしますか？')) {
+      onResetScores();
+    }
+  };
+
+  // ▼▼▼ 追加：新しいゲーム開始時の確認処理 ▼▼▼
+  const handleNewGame = () => {
+    if (window.confirm('本当に新しいゲームを開始しますか？（すべてのプレイヤーが削除されます）')) {
+      onNewGame();
+    }
+  };
+
+
 
   const handleHit = (area) => {
     if (throws.length >= 5) return; // 投擲回数を5回に変更
@@ -76,8 +92,13 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
         <label>大きさ: {boardScale.toFixed(2)}</label>
         <input type="range" min="0.5" max="1.5" step="0.01" value={boardScale} onChange={(e) => setBoardScale(parseFloat(e.target.value))} />
       </div>
+      <div className="leaderboard-controls">
+        <button onClick={handleResetScores} className="control-btn">スコアリセット</button>
+        <button onClick={handleNewGame} className="control-btn new-game">新しいゲーム</button>
+      </div>
     </div>
   );
+
 
   return (
     <div className="dart-area-container">
@@ -97,7 +118,8 @@ const DartArea = ({ onAddScore, boardOffset, setBoardOffset, boardScale, setBoar
           <button onClick={resetTurn} className="reset">Reset</button>
           <button onClick={confirmScore} className="confirm">スコアを追加</button>
         </div>
-      </div>
+
+      </div> 
       <div className="dartboard-wrapper" style={{ transform: `translate(${boardOffset.x}px, ${boardOffset.y}px) scale(${boardScale})` }}>
         <Dartboard onHit={handleHit} onHover={setHoveredArea} />
         {hoveredArea && (<div className="hover-info">{hoveredArea}: {getScoreValue(hoveredArea)}</div>)}
