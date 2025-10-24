@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // ローカル動画は src/assets/videos にあります。Viteで解決するため import します。
-import aVideo from '../assets/videos/a.mp4';
+import aVideo from '../assets/videos/A.mov';
 import bVideo from '../assets/videos/B.mov';
 import sVideo from '../assets/videos/S.mov';
 
