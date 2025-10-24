@@ -1,7 +1,11 @@
 // src/components/GachaModal.jsx
 import React, { useEffect, useRef, useState } from 'react';
 
-// 動画は public/videos に配置されている想定: /videos/a.mp4, /videos/b.mp4, /videos/s.mp4
+// ローカル動画は src/assets/videos にあります。Viteで解決するため import します。
+import aVideo from '../assets/videos/a.mp4';
+import bVideo from '../assets/videos/b.mp4';
+import sVideo from '../assets/videos/s.mp4';
+
 const DEFAULT_FALLBACK = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm';
 
 const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
@@ -17,13 +21,13 @@ const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
 
     if (premium) {
       // プレミアム時: score < 120 -> a, 120 <= score -> s
-      selected = s < 120 ? '/src/assets/videos/a.mp4' : '/src/assets/videos/s.mp4';
+      selected = s < 120 ? aVideo : sVideo;
     } else {
       // 非プレミアム: score < 90 -> b, 90 <= score < 140 -> a, 140 < score -> s
-      if (s < 90) selected = '/src/assets/videos/b.mp4';
-      else if (s >= 90 && s < 140) selected = '/src/assets/videos/a.mp4';
-      else if (s > 140) selected = '/src/assets/videos/s.mp4';
-      else selected = '/src/assets/videos/a.mp4';
+      if (s < 90) selected = bVideo;
+      else if (s >= 90 && s < 140) selected = aVideo;
+      else if (s > 140) selected = sVideo;
+      else selected = aVideo;
     }
 
     setSrc(selected);
