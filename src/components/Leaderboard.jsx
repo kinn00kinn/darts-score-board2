@@ -1,5 +1,5 @@
 // src/components/Leaderboard.jsx
-import React from 'react';
+import React, { useState } from 'react';
 
 // ▼▼▼ 変更：showAdminControls を props で受け取る ▼▼▼
 const Leaderboard = ({
@@ -13,6 +13,22 @@ const Leaderboard = ({
   onConfirmScore,
 }) => {
   const hasThrows = currentThrows.length > 0;
+
+  // ▼▼▼ ここから追加 ▼▼▼
+  // IME入力中かどうかを管理するstate
+  const [isComposing, setIsComposing] = useState(false);
+
+  // Enterキーが押されたときの処理
+  const handleKeyDown = (event) => {
+    // IMEが非アクティブで、かつEnterキーが押された場合に実行
+    if (event.key === 'Enter' && !isComposing) {
+      // フォームのデフォルトの送信動作をキャンセル
+      event.preventDefault();
+      // onConfirmScoreが渡されていれば実行
+      onConfirmScore?.();
+    }
+  };
+  // ▲▲▲ ここまで追加 ▲▲▲
 
   return (
     <div className="leaderboard-container"> 
@@ -42,6 +58,11 @@ const Leaderboard = ({
             placeholder="名前を入力..."
             value={currentPlayerName}
             onChange={(e) => onPlayerNameChange?.(e.target.value)}
+            // ▼▼▼ ここから追加 ▼▼▼
+            onKeyDown={handleKeyDown}
+            onCompositionStart={() => setIsComposing(true)}
+            onCompositionEnd={() => setIsComposing(false)}
+            // ▲▲▲ ここまで追加 ▲▲▲
           />
           <button onClick={() => onConfirmScore?.()} className="confirm">追加</button>
         </div>
