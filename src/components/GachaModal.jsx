@@ -30,6 +30,8 @@ const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
       else selected = aVideo;
     }
 
+    console.log('Gacha selected video:', selected);
+
     setSrc(selected);
 
     // 少し遅延を置いて再生を開始（ブラウザの自動再生対策緩和）

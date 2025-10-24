@@ -1,5 +1,7 @@
 // src/components/Leaderboard.jsx
 import React, { useState } from 'react';
+import scoreAddSound from '../assets/sounds/score-add.mp3';
+import premiumSound from '../assets/sounds/premium.mp3';
 
 // ▼▼▼ 変更：showAdminControls を props で受け取る ▼▼▼
 const Leaderboard = ({
@@ -28,6 +30,14 @@ const Leaderboard = ({
       event.preventDefault();
       // onConfirmScoreが渡されていれば実行
       onConfirmScore?.(isPremium);
+      try {
+        const audio = new Audio(scoreAddSound);
+        audio.play();
+      } catch {
+        console.warn('score add sound play failed');
+      }
+      // 追加ボタンを押したら必ずSTANDARDに戻す
+      setIsPremium(false);
     }
   };
   // ▲▲▲ ここまで追加 ▲▲▲
@@ -58,7 +68,17 @@ const Leaderboard = ({
           <div className="premium-switch-wrap">
             <button
               className={`premium-switch ${isPremium ? 'on' : 'off'}`}
-              onClick={() => setIsPremium(prev => !prev)}
+              onClick={() => {
+                // toggle and play premium toggle sound
+                const next = !isPremium;
+                setIsPremium(next);
+                try {
+                  const audio = new Audio(premiumSound);
+                  audio.play();
+                } catch {
+                  console.warn('premium sound play failed');
+                }
+              }}
               title="プレミアムを切り替え"
               aria-pressed={isPremium}
             >
@@ -78,7 +98,19 @@ const Leaderboard = ({
             onCompositionEnd={() => setIsComposing(false)}
           />
 
-          <button onClick={() => onConfirmScore?.(isPremium)} className="confirm">追加</button>
+          <button
+            onClick={() => {
+              onConfirmScore?.(isPremium);
+              try {
+                const audio = new Audio(scoreAddSound);
+                audio.play();
+              } catch {
+                console.warn('score add sound play failed');
+              }
+              setIsPremium(false);
+            }}
+            className="confirm"
+          >追加</button>
         </div>
         <div className="leaderboard-actions action-buttons">
           <button onClick={() => onUndoThrow?.()} disabled={!hasThrows}>Undo</button>
