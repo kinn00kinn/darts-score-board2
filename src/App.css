@@ -289,37 +289,38 @@ body {
 }
 .leaderboard-player-input {
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   display: flex;
+  gap: 8px;
+  align-items: center;
   justify-content: center;
-  align-items: stretch;
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(16px);
+  background: rgba(226, 28, 28, 0);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
 }
 .leaderboard-player-input .player-name-input {
   flex: 1;
   border: none;
   background: transparent;
-  padding: 12px 18px;
-  font-size: 1.2rem;
+  padding: 10px 10px;
+  font-size: 1.1rem;
   text-align: left;
   color: var(--text-color);
 }
 .leaderboard-player-input .player-name-input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
-.leaderboard-player-input button {
-  width: 128px;
+.leaderboard-player-input .confirm {
+  width: 96px;
   border-radius: 0 12px 12px 0;
   font-size: 1.05rem;
   font-weight: 600;
   height: auto;
-  padding: 0px 8px;
+  padding: 8px 10px;
 }
 
 
@@ -545,15 +546,6 @@ body {
   text-shadow: 0 0 10px var(--highlight-color); /* 光彩効果を追加 */
 }
 .player-input-area span { font-size: 1rem; opacity: 0.8; }
-.player-name-input {
-  background-color: var(--primary-bg);
-  color: var(--text-color);
-  border: 1px solid #555;
-  border-radius: 5px;
-  padding: 10px;
-  font-size: 2rem; /* フォントサイズを大きく */
-  text-align: center;
-}
 
 .dev-controls {
   position: absolute; bottom: 20px; left: 20px;
@@ -565,3 +557,119 @@ body {
 .dev-controls:hover { opacity: 1; }
 .dev-controls p { margin: 0 0 10px 0; font-weight: bold; }
 .dev-controls div { display: flex; align-items: center; gap: 10px; min-width: 300px; }
+
+/* プレミアム選択ボタン（キラキラ） */
+.premium-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: var(--text-color);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45), inset 0 -4px 10px rgba(255,255,255,0.02);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.premium-btn:hover { transform: translateY(-2px); }
+.premium-btn.active {
+  background: linear-gradient(90deg, #ffd700, #ff7ab6);
+  color: #222;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  box-shadow: 0 10px 30px rgba(255,160,0,0.18), 0 0 30px rgba(255,122,182,0.08) inset;
+}
+
+/* Gacha video 微調整 */
+.gacha-video { border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+
+/* 豪華スイッチ（プレミアム切替） */
+.premium-switch-wrap { display: flex; align-items: center; margin-right: 8px; }
+.premium-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  color: var(--text-color);
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6), inset 0 -6px 12px rgba(255,255,255,0.02);
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms ease;
+}
+.premium-switch:hover { transform: translateY(-3px) rotate(-1deg); }
+.premium-switch .switch-gems {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff8c4, #ffd700 40%, #ff7ab6 100%);
+  box-shadow: 0 0 12px rgba(255,200,50,0.6), 0 2px 6px rgba(0,0,0,0.4) inset;
+  display: inline-block;
+}
+.premium-switch .switch-label { font-size: 0.85rem; }
+.premium-switch.on {
+  background: linear-gradient(90deg, rgba(255,220,60,0.12), rgba(255,122,182,0.08));
+  border-color: rgba(255,200,50,0.85);
+  color: #111;
+  box-shadow: 0 12px 40px rgba(255,150,30,0.12), 0 0 28px rgba(255,100,170,0.06) inset;
+  background-color:rgba(255,200,50,0.55);
+}
+.premium-switch.off { opacity: 0.95; }
+
+/* アニメーション: 宝石の揺れ・キラキラ */
+.premium-switch .switch-gems {
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), box-shadow 260ms ease;
+}
+.premium-switch.on .switch-gems {
+  animation: gem-wobble 850ms ease-in-out infinite alternate;
+  box-shadow: 0 0 18px rgba(255,210,80,0.9), 0 6px 18px rgba(255,120,170,0.08) inset;
+}
+@keyframes gem-wobble {
+  0% { transform: translateY(0) rotate(-2deg) scale(1); }
+  50% { transform: translateY(-2px) rotate(2deg) scale(1.06); }
+  100% { transform: translateY(0) rotate(-1deg) scale(1); }
+}
+
+/* スイッチ本体の光のスpark */
+.premium-switch::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.8);
+}
+.premium-switch.on::after {
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,230,0.95), rgba(255,200,60,0.9));
+  box-shadow: 0 0 18px rgba(255,200,60,0.9);
+  opacity: 1;
+  animation: switch-spark 1200ms ease-out;
+}
+@keyframes switch-spark {
+  0% { opacity: 0; transform: scale(0.6) translateY(0); }
+  40% { opacity: 1; transform: scale(1.15) translateY(-2px); }
+  100% { opacity: 0.0; transform: scale(1.6) translateY(-8px); }
+}
+
+/* ON の際の軽いパルス */
+.premium-switch.on { animation: premium-pulse 2000ms infinite; }
+@keyframes premium-pulse {
+  0% { box-shadow: 0 12px 40px rgba(255,150,30,0.06), 0 0 28px rgba(255,100,170,0.02) inset; }
+  50% { box-shadow: 0 18px 50px rgba(255,160,40,0.12), 0 0 36px rgba(255,110,160,0.04) inset; }
+  100% { box-shadow: 0 12px 40px rgba(255,150,30,0.06), 0 0 28px rgba(255,100,170,0.02) inset; }
+}
+
+/* フォーカス/キーボード操作に対する明確なスタイル */
+.premium-switch:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255,200,60,0.12), 0 12px 40px rgba(0,0,0,0.4);
+}
+
+
+/* プレイヤー入力レイアウト調整（プレミアムスイッチを左に置く） */
+.leaderboard-player-input { display: flex; gap: 0px; align-items: center; }
+.leaderboard-player-input .confirm { width: 96px; }

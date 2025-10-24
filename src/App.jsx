@@ -23,6 +23,8 @@ function App() {
 
   const [editingPlayer, setEditingPlayer] = useState(null);
   const [isGachaVisible, setIsGachaVisible] = useState(false);
+  // Gacha表示時に参照するコンテキスト情報（スコア、プレミアムフラグ）
+  const [gachaContext, setGachaContext] = useState({ score: 0, premium: false });
   const [boardOffset, setBoardOffset] = useState({ x: -30, y: -30 });
   const [boardScale, setBoardScale] = useState(1);
   const [celebration, setCelebration] = useState({ show: false, name: '' });
@@ -49,7 +51,8 @@ function App() {
     });
   };
 
-  const handleConfirmCurrentTurn = () => {
+  // premium は Leaderboard から渡される（新規プレイヤー追加時の選択）
+  const handleConfirmCurrentTurn = (premium = false) => {
     const trimmedName = currentPlayerName.trim();
     if (!trimmedName) {
       alert('名前を入力してください');
@@ -63,7 +66,7 @@ function App() {
       console.error('効果音の再生に失敗しました:', error);
     }
 
-    handleAddOrUpdateScore(trimmedName, currentTurnScore);
+    handleAddOrUpdateScore(trimmedName, currentTurnScore, premium);
     setCurrentPlayerName('');
     clearCurrentTurn();
   };
@@ -78,7 +81,7 @@ function App() {
   }, [players]);
 
   // スコア追加/更新のメインロジック
-  const handleAddOrUpdateScore = (name, score) => {
+  const handleAddOrUpdateScore = (name, score, premium = false) => {
     const trimmedName = name.trim();
     const existingPlayer = players.find(p => p.name.toLowerCase() === trimmedName.toLowerCase());
     const oldSorted = [...players];
@@ -86,11 +89,14 @@ function App() {
     let updatedPlayers;
 
     if (existingPlayer) {
+      // 既存プレイヤーはスコア加算。
+      // premium 引数で明示的に切り替えられるようにする（重複追加時の挙動修正）
       updatedPlayers = players.map(p =>
-        p.id === existingPlayer.id ? { ...p, score: p.score + score } : p
+        p.id === existingPlayer.id ? { ...p, score: p.score + score, premium: !!premium } : p
       );
     } else {
-      const newPlayer = { id: Date.now(), name: trimmedName, score };
+      // 新規プレイヤー追加時は premium を付与
+      const newPlayer = { id: Date.now(), name: trimmedName, score, premium: !!premium };
       updatedPlayers = [...players, newPlayer];
       targetPlayerId = newPlayer.id;
     }
@@ -100,13 +106,16 @@ function App() {
     const newRank = newSorted.findIndex(p => p.id === targetPlayerId) + 1;
     const finalOldRank = oldRank === 0 ? oldSorted.length + 1 : oldRank;
 
-    // どんなときでもGacha演出を発動させる
-    setIsGachaVisible(true);
+  // どんなときでもGacha演出を発動させる。
+  // 表示する動画はプレミアムフラグと最終スコアに依存するため、contextを設定してから表示フラグを立てる
+  const targetPlayer = updatedPlayers.find(p => p.id === targetPlayerId) || { score: 0, premium: false };
+  setGachaContext({ score: targetPlayer.score, premium: !!targetPlayer.premium });
+  setIsGachaVisible(true);
 
     // トップ3に入賞したかチェック
     if (finalOldRank > 3 && newRank > 0 && newRank <= 3) {
-      // Gacha演出の後に表示する祝福演出を予約する
-      setPendingCelebration({ name: trimmedName });
+      // Gacha演出の後に表示する祝福演出を予約する（名前とランクを保持）
+      setPendingCelebration({ name: trimmedName, rank: newRank });
     }
     
     setPlayers(newSorted);
@@ -117,8 +126,8 @@ function App() {
     setIsGachaVisible(false);
     // 予約されていた祝福演出があれば実行
     if (pendingCelebration) {
-      setCelebration({ show: true, name: pendingCelebration.name });
-      setTimeout(() => setCelebration({ show: false, name: '' }), 5000);
+      setCelebration({ show: true, name: pendingCelebration.name, rank: pendingCelebration.rank });
+      setTimeout(() => setCelebration({ show: false, name: '', rank: null }), 5000);
       setPendingCelebration(null); // 予約をクリア
     }
   };
@@ -209,6 +218,8 @@ function App() {
       <GachaModal
         isVisible={isGachaVisible}
         onGachaEnd={handleGachaEnd}
+        score={gachaContext.score}
+        premium={gachaContext.premium}
       />
       
       {celebration.show && <CelebrationOverlay name={celebration.name} />}

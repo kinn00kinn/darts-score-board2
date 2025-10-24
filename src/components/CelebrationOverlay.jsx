@@ -4,16 +4,19 @@ import Confetti from 'react-confetti';
 import './Celebration.css';
 import fanfareSound from '../assets/sounds/fanfare.mp3'; // 音声ファイルをインポート
 
-const CelebrationOverlay = ({ name }) => {
+// name: プレイヤー名, rank: 入賞順位 (数値)
+const CelebrationOverlay = ({ name, rank = null }) => {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  // ▼▼▼ 追加：コンポーネントが表示された時に一度だけ音を再生する ▼▼▼
+  // コンポーネント表示時に一度だけファンファーレを再生
   useEffect(() => {
     const audio = new Audio(fanfareSound);
-    audio.play();
-  }, []); // 空の配列を渡すことで、初回表示時のみ実行される
-  // ▲▲▲ 追加 ▲▲▲
+    audio.play().catch(() => {
+      // 自動再生がブロックされても致命的ではない
+      // console.warn('fanfare play blocked');
+    });
+  }, []);
 
   return (
     <div className="celebration-overlay">
@@ -21,12 +24,16 @@ const CelebrationOverlay = ({ name }) => {
         width={width}
         height={height}
         recycle={false}
-        numberOfPieces={300}
-        gravity={0.1}
+        numberOfPieces={350}
+        gravity={0.08}
       />
       <div className="celebration-message">
         <h1>Congratulations!</h1>
-        <p>{name}さんがトップ3に入りました！</p>
+        {rank ? (
+          <p>{name} さんが <strong>{rank}位</strong> に入りました！</p>
+        ) : (
+          <p>{name} さんがトップ3に入りました！</p>
+        )}
       </div>
     </div>
   );

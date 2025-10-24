@@ -5,11 +5,13 @@ import React, { useState, useEffect } from 'react';
 const EditPlayerModal = ({ player, onSave, onCancel, onDelete }) => {
   const [name, setName] = useState('');
   const [score, setScore] = useState(0);
+  const [premium, setPremium] = useState(false);
 
   useEffect(() => {
     if (player) {
       setName(player.name);
       setScore(player.score);
+      setPremium(!!player.premium);
     }
   }, [player]);
 
@@ -20,7 +22,7 @@ const EditPlayerModal = ({ player, onSave, onCancel, onDelete }) => {
   const handleSave = () => {
     const newScore = parseInt(score, 10);
     if (!isNaN(newScore)) {
-      onSave({ ...player, name, score: newScore });
+      onSave({ ...player, name, score: newScore, premium: !!premium });
     }
   };
 
@@ -53,6 +55,16 @@ const EditPlayerModal = ({ player, onSave, onCancel, onDelete }) => {
             value={score}
             onChange={(e) => setScore(e.target.value)}
           />
+        </div>
+        <div className="form-group">
+          <label>プレミアム</label>
+          <button
+            className={`premium-btn ${premium ? 'active' : ''}`}
+            onClick={() => setPremium(p => !p)}
+            type="button"
+          >
+            {premium ? '✨ Premium ✨' : 'Standard'}
+          </button>
         </div>
         <div className="modal-actions">
           {/* ▼▼▼ 追加：削除ボタン ▼▼▼ */}

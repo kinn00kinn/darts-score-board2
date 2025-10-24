@@ -13,6 +13,8 @@ const Leaderboard = ({
   onConfirmScore,
 }) => {
   const hasThrows = currentThrows.length > 0;
+  // 新規追加時に使うプレミアム選択
+  const [isPremium, setIsPremium] = useState(false);
 
   // ▼▼▼ ここから追加 ▼▼▼
   // IME入力中かどうかを管理するstate
@@ -25,7 +27,7 @@ const Leaderboard = ({
       // フォームのデフォルトの送信動作をキャンセル
       event.preventDefault();
       // onConfirmScoreが渡されていれば実行
-      onConfirmScore?.();
+      onConfirmScore?.(isPremium);
     }
   };
   // ▲▲▲ ここまで追加 ▲▲▲
@@ -52,19 +54,31 @@ const Leaderboard = ({
       </ol>
       <div className="current-turn-card">
         <div className="player-input-area leaderboard-player-input">
+          {/* 豪華スイッチを左に配置 */}
+          <div className="premium-switch-wrap">
+            <button
+              className={`premium-switch ${isPremium ? 'on' : 'off'}`}
+              onClick={() => setIsPremium(prev => !prev)}
+              title="プレミアムを切り替え"
+              aria-pressed={isPremium}
+            >
+              <span className="switch-gems" aria-hidden />
+              <span className="switch-label">{isPremium ? '✨ PREMIUM ✨' : 'STANDARD'}</span>
+            </button>
+          </div>
+
           <input
             type="text"
             className="player-name-input"
             placeholder="名前を入力..."
             value={currentPlayerName}
             onChange={(e) => onPlayerNameChange?.(e.target.value)}
-            // ▼▼▼ ここから追加 ▼▼▼
             onKeyDown={handleKeyDown}
             onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => setIsComposing(false)}
-            // ▲▲▲ ここまで追加 ▲▲▲
           />
-          <button onClick={() => onConfirmScore?.()} className="confirm">追加</button>
+
+          <button onClick={() => onConfirmScore?.(isPremium)} className="confirm">追加</button>
         </div>
         <div className="leaderboard-actions action-buttons">
           <button onClick={() => onUndoThrow?.()} disabled={!hasThrows}>Undo</button>

@@ -25,7 +25,6 @@ const DartArea = ({
   showDevControls,
   onResetScores,
   onNewGame,
-  playerName,
   turnScore,
   setTurnScore,
   throws,
