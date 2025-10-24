@@ -3,14 +3,16 @@ import React, { useEffect, useRef, useState } from 'react';
 
 // ローカル動画は src/assets/videos にあります。Viteで解決するため import します。
 import aVideo from '../assets/videos/a.mp4';
-import bVideo from '../assets/videos/b.mp4';
-import sVideo from '../assets/videos/s.mp4';
+import bVideo from '../assets/videos/B.mov';
+import sVideo from '../assets/videos/S.mov';
 
 const DEFAULT_FALLBACK = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm';
 
 const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
   const videoRef = useRef(null);
   const [src, setSrc] = useState(DEFAULT_FALLBACK);
+  // デフォルトでは音ありで再生を試みる（ブラウザがブロックする場合は自動でミュートにフォールバック）
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -34,19 +36,31 @@ const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
 
     setSrc(selected);
 
-    // 少し遅延を置いて再生を開始（ブラウザの自動再生対策緩和）
-    const tryPlay = () => {
-      const p = videoRef.current?.play?.();
-      if (p && typeof p.catch === 'function') {
-        p.catch(err => {
-          console.warn('Video autoplay failed:', err);
+    // 少し遅延を置いて再生を開始。最初はミュート解除で試み、失敗したらミュートで再生し直す。
+    const tryPlay = async () => {
+      if (!videoRef.current) return;
+      try {
+        videoRef.current.muted = false;
+        await videoRef.current.play();
+        // 成功すれば isMuted=false を保つ
+        setIsMuted(false);
+      } catch (err) {
+        // 自動再生ポリシーでブロックされた場合はミュートにして再生を試す
+        console.warn('Autoplay unmuted failed, falling back to muted playback', err);
+        setIsMuted(true);
+        try {
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            await videoRef.current.play();
+          }
+        } catch (err2) {
+          console.warn('Muted playback also failed', err2);
           onGachaEnd();
-        });
+        }
       }
     };
 
-    // 次のイベントループで再生を試みる
-    const t = setTimeout(tryPlay, 80);
+    const t = setTimeout(() => { tryPlay(); }, 80);
     return () => clearTimeout(t);
   }, [isVisible, score, premium, onGachaEnd]);
 
@@ -62,19 +76,42 @@ const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
     }
   };
 
-  return (
+    return (
     <div className="gacha-overlay" onClick={onGachaEnd}>
-      <video
-        ref={videoRef}
-        src={src}
-        onEnded={onGachaEnd}
-        onClick={(e) => e.stopPropagation()}
-        muted
-        onError={handleError}
-        className="gacha-video"
-      >
-        お使いのブラウザはビデオタグをサポートしていません。
-      </video>
+      <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+        <video
+          ref={videoRef}
+          src={src}
+          onEnded={onGachaEnd}
+          onClick={(e) => e.stopPropagation()}
+          muted={isMuted}
+          onError={handleError}
+          className="gacha-video"
+        >
+          お使いのブラウザはビデオタグをサポートしていません。
+        </video>
+
+        {/* ミュート解除ボタン: 自動再生で音が出ない場合、ユーザーがここで音を有効にできる */}
+        {isMuted && (
+          <button
+            className="gacha-unmute-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              try {
+                setIsMuted(false);
+                if (videoRef.current) {
+                  videoRef.current.muted = false;
+                  // 再生を再トリガーして音声を有効にする
+                  videoRef.current.play().catch(() => {});
+                }
+              } catch (err) {
+                console.warn('unmute failed', err);
+              }
+            }}
+            aria-label="アンミュートして音を聞く"
+          >🔊 音を有効にする</button>
+        )}
+      </div>
     </div>
   );
 };
