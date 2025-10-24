@@ -288,21 +288,19 @@ body {
   opacity: 0.6;
 }
 .leaderboard-player-input {
+  margin: 0;
   width: 100%;
-  max-width: 420px;
   display: flex;
-  gap: 8px;
+  max-width: 440px;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  overflow: hidden;
+  border-radius: 21px;
   background: rgba(226, 28, 28, 0);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.32);
   backdrop-filter: blur(14px);
 }
 .leaderboard-player-input .player-name-input {
-  flex: 1;
   border: none;
   background: transparent;
   padding: 10px 10px;
@@ -315,11 +313,11 @@ body {
   background: rgba(255, 255, 255, 0.03);
 }
 .leaderboard-player-input .confirm {
-  width: 96px;
-  border-radius: 0 12px 12px 0;
+  border-radius: 0 21px 21px 0;
   font-size: 1.05rem;
   font-weight: 600;
   height: auto;
+  width: 64px;
   padding: 8px 10px;
 }
 
@@ -561,7 +559,7 @@ body {
 /* プレミアム選択ボタン（キラキラ） */
 .premium-btn {
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 100%;
   border: 1px solid rgba(255,255,255,0.08);
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   color: var(--text-color);
@@ -599,7 +597,6 @@ body {
 .gacha-unmute-btn:hover { transform: translateY(-2px); }
 
 /* 豪華スイッチ（プレミアム切替） */
-.premium-switch-wrap { display: flex; align-items: center; margin-right: 8px; }
 .premium-switch {
   position: relative;
   display: inline-flex;
@@ -685,8 +682,3 @@ body {
   outline: none;
   box-shadow: 0 0 0 4px rgba(255,200,60,0.12), 0 12px 40px rgba(0,0,0,0.4);
 }
-
-
-/* プレイヤー入力レイアウト調整（プレミアムスイッチを左に置く） */
-.leaderboard-player-input { display: flex; gap: 0px; align-items: center; }
-.leaderboard-player-input .confirm { width: 96px; }
