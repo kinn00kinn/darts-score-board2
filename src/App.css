@@ -289,9 +289,8 @@ body {
 }
 .leaderboard-player-input {
   margin: 0;
-  width: 100%;
+  width: auto;
   display: flex;
-  max-width: 440px;
   align-items: center;
   justify-content: center;
   border-radius: 21px;
@@ -302,22 +301,21 @@ body {
 }
 .leaderboard-player-input .player-name-input {
   border: none;
+  margin-left: 12px;
   background: transparent;
-  padding: 10px 10px;
   font-size: 1.1rem;
   text-align: left;
   color: var(--text-color);
 }
 .leaderboard-player-input .player-name-input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.03);
 }
 .leaderboard-player-input .confirm {
   border-radius: 0 21px 21px 0;
   font-size: 1.05rem;
   font-weight: 600;
   height: auto;
-  width: 64px;
+  width: 96px;
   padding: 8px 10px;
 }
 
