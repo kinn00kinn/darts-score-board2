@@ -118,6 +118,7 @@ function App() {
       setPendingCelebration({ name: trimmedName, rank: newRank });
     }
     
+    console.log(newSorted);
     setPlayers(newSorted);
   };
 

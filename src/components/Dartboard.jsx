@@ -11,6 +11,7 @@ const RADII = {
   innerDouble: 215,
   outerDouble: 230,
   board: 250,
+  numberRing: 240,
 };
 
 const getCoords = (angle, radius) => {
@@ -25,15 +26,16 @@ const Segment = ({ number, index }) => {
   const angle = 18 * index;
   const startAngle = angle - 9;
   const endAngle = angle + 9;
-  const color = index % 2 === 0 ? '#eee' : '#222';
+  const color = index % 2 !== 0 ? '#eee' : '#222';
 
   const singlePath1 = `M ${getCoords(startAngle, RADII.singleBull).x} ${getCoords(startAngle, RADII.singleBull).y} A ${RADII.singleBull} ${RADII.singleBull} 0 0 1 ${getCoords(endAngle, RADII.singleBull).x} ${getCoords(endAngle, RADII.singleBull).y} L ${getCoords(endAngle, RADII.innerTriple).x} ${getCoords(endAngle, RADII.innerTriple).y} A ${RADII.innerTriple} ${RADII.innerTriple} 0 0 0 ${getCoords(startAngle, RADII.innerTriple).x} ${getCoords(startAngle, RADII.innerTriple).y} Z`;
   const singlePath2 = `M ${getCoords(startAngle, RADII.outerTriple).x} ${getCoords(startAngle, RADII.outerTriple).y} A ${RADII.outerTriple} ${RADII.outerTriple} 0 0 1 ${getCoords(endAngle, RADII.outerTriple).x} ${getCoords(endAngle, RADII.outerTriple).y} L ${getCoords(endAngle, RADII.innerDouble).x} ${getCoords(endAngle, RADII.innerDouble).y} A ${RADII.innerDouble} ${RADII.innerDouble} 0 0 0 ${getCoords(startAngle, RADII.innerDouble).x} ${getCoords(startAngle, RADII.innerDouble).y} Z`;
   const triplePath = `M ${getCoords(startAngle, RADII.innerTriple).x} ${getCoords(startAngle, RADII.innerTriple).y} A ${RADII.innerTriple} ${RADII.innerTriple} 0 0 1 ${getCoords(endAngle, RADII.innerTriple).x} ${getCoords(endAngle, RADII.innerTriple).y} L ${getCoords(endAngle, RADII.outerTriple).x} ${getCoords(endAngle, RADII.outerTriple).y} A ${RADII.outerTriple} ${RADII.outerTriple} 0 0 0 ${getCoords(startAngle, RADII.outerTriple).x} ${getCoords(startAngle, RADII.outerTriple).y} Z`;
   const doublePath = `M ${getCoords(startAngle, RADII.innerDouble).x} ${getCoords(startAngle, RADII.innerDouble).y} A ${RADII.innerDouble} ${RADII.innerDouble} 0 0 1 ${getCoords(endAngle, RADII.innerDouble).x} ${getCoords(endAngle, RADII.innerDouble).y} L ${getCoords(endAngle, RADII.outerDouble).x} ${getCoords(endAngle, RADII.outerDouble).y} A ${RADII.outerDouble} ${RADII.outerDouble} 0 0 0 ${getCoords(startAngle, RADII.outerDouble).x} ${getCoords(startAngle, RADII.outerDouble).y} Z`;
 
-  const tripleColor = index % 2 === 0 ? '#070' : '#c00';
-  const doubleColor = index % 2 === 0 ? '#070' : '#c00';
+  const tripleColor = index % 2 !== 0 ? '#070' : '#c00';
+  const doubleColor = index % 2 !== 0 ? '#070' : '#c00';
+  const numberPosition = getCoords(angle, RADII.numberRing);
 
   return (
     <g>
@@ -41,6 +43,18 @@ const Segment = ({ number, index }) => {
       <path d={singlePath2} fill={color} data-area={`S${number}`} />
       <path d={triplePath} fill={tripleColor} data-area={`T${number}`} />
       <path d={doublePath} fill={doubleColor} data-area={`D${number}`} />
+      <text
+        x={numberPosition.x}
+        y={numberPosition.y}
+        fill="#f5f5f5"
+        fontSize="12"
+        fontWeight="700"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        pointerEvents="none"
+      >
+        {number}
+      </text>
     </g>
   );
 };
