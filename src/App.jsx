@@ -89,10 +89,10 @@ function App() {
     let updatedPlayers;
 
     if (existingPlayer) {
-      // 既存プレイヤーはスコア加算。
-      // premium 引数で明示的に切り替えられるようにする（重複追加時の挙動修正）
+      // 既存プレイヤーはスコアを上書きする（従来は加算になっていたが、上書きに変更）
+      // premium 引数で明示的に切り替えられる
       updatedPlayers = players.map(p =>
-        p.id === existingPlayer.id ? { ...p, score: p.score + score, premium: !!premium } : p
+        p.id === existingPlayer.id ? { ...p, score: score, premium: !!premium } : p
       );
     } else {
       // 新規プレイヤー追加時は premium を付与
