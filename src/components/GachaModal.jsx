@@ -2,9 +2,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 // ローカル動画は src/assets/videos にあります。Viteで解決するため import します。
-import aVideo from '../assets/videos/A.mov';
-import bVideo from '../assets/videos/B.mov';
-import sVideo from '../assets/videos/S.mov';
+import aVideo from '../assets/videos/A.mp4';
+import bVideo from '../assets/videos/B.mp4';
+import sVideo from '../assets/videos/S.mp4';
 
 const DEFAULT_FALLBACK = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm';
 
