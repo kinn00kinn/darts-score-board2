@@ -10,7 +10,7 @@ Darts Score Boardは、イベント会場（文化祭など）で使用するこ
 
 
 
-<video controls src="README_src/result.mp4" title="Title"></video>
+![](/README_src/result.gif)
 
 ### 主な特徴
 - 🎮 直感的なスコア入力・表示
