@@ -23,12 +23,12 @@ const GachaModal = ({ isVisible, onGachaEnd, score = 0, premium = false }) => {
 
     if (premium) {
       // プレミアム時: score < 100 -> a, 100 <= score -> s
-      selected = s < 100 ? aVideo : sVideo;
+      selected = s < 80 ? aVideo : sVideo;
     } else {
       // 非プレミアム: score < 80 -> b, 80 <= score < 120 -> a, 120 < score -> s
-      if (s < 80) selected = bVideo;
-      else if (s >= 80 && s < 120) selected = aVideo;
-      else if (s >= 120) selected = sVideo;
+      if (s < 70) selected = bVideo;
+      else if (s >= 70 && s < 100) selected = aVideo;
+      else if (s >= 100) selected = sVideo;
       else selected = aVideo;
     }
 
